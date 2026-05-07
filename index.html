@@ -1373,13 +1373,12 @@ const Popover = ({
   const [open, setOpen] = useState(false);
   const [pos, setPos] = useState({
     top: 0,
-    left: 0,
-    ready: false
+    left: 0
   });
   const triggerRef = useRef(null);
   const popoverRef = useRef(null);
 
-  /* Position calculation — runs every time we open or content size changes. */
+  /* Position calculation — runs every time we open. */
   const updatePosition = useCallback(() => {
     if (!triggerRef.current) return;
     const r = triggerRef.current.getBoundingClientRect();
@@ -1413,18 +1412,12 @@ const Popover = ({
     }
     setPos({
       top,
-      left,
-      ready: ph > 0
+      left
     });
   }, [align, width, side]);
-
-  /* useLayoutEffect runs synchronously before paint — prevents the flash at (0,0).
-     We do an initial measure here, then a useEffect handles continuous updates. */
-  React.useLayoutEffect(() => {
-    if (open) updatePosition();
-  }, [open, updatePosition]);
   useEffect(() => {
     if (!open) return;
+    updatePosition();
     /* Reposition on scroll/resize so menu sticks to its trigger */
     const onScroll = () => updatePosition();
     const onResize = () => updatePosition();
@@ -1463,14 +1456,21 @@ const Popover = ({
       document.removeEventListener('keydown', onKey);
     };
   }, [open]);
+
+  /* Re-measure once popover renders so vertical-flip can use real height */
+  useEffect(() => {
+    if (open) {
+      const id = requestAnimationFrame(updatePosition);
+      return () => cancelAnimationFrame(id);
+    }
+  }, [open, updatePosition]);
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("span", {
     ref: triggerRef,
     onClick: e => {
       e.stopPropagation();
       setOpen(o => !o);
     }
-  }, trigger), /*#__PURE__*/React.createElement(AnimatePresence, null, open && /*#__PURE__*/createPortal(/*#__PURE__*/React.createElement(motion.div, {
-    key: "popover",
+  }, trigger), open && /*#__PURE__*/createPortal(/*#__PURE__*/React.createElement(AnimatePresence, null, /*#__PURE__*/React.createElement(motion.div, {
     ref: popoverRef,
     initial: {
       opacity: 0,
@@ -1478,7 +1478,7 @@ const Popover = ({
       scale: 0.98
     },
     animate: {
-      opacity: pos.ready ? 1 : 0,
+      opacity: 1,
       y: 0,
       scale: 1
     },
@@ -1497,13 +1497,12 @@ const Popover = ({
       left: pos.left,
       width,
       background: 'var(--bg-elevated)',
-      borderColor: 'var(--border)',
-      visibility: pos.ready ? 'visible' : 'hidden'
+      borderColor: 'var(--border)'
     },
     onClick: e => e.stopPropagation()
   }, typeof children === 'function' ? children({
     close: () => setOpen(false)
-  }) : children), document.body)));
+  }) : children)), document.body));
 };
 const ContextMenuItem = ({
   item,
