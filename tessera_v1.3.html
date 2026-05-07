@@ -1,0 +1,4818 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Tessera — calm productivity for teams</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: {
+      extend: {
+        fontFamily: {
+          serif: ['"Instrument Serif"', 'Georgia', 'serif'],
+          sans: ['Geist', 'ui-sans-serif', 'system-ui'],
+          mono: ['"Geist Mono"', 'ui-monospace', 'monospace'],
+        },
+      },
+    },
+  };
+</script>
+<style>
+  /* ─── Theme tokens — selectors are mutually exclusive, no overlap ─── */
+
+  /* Default = Light Warm. Applied via :root so it kicks in before JS sets data-theme. */
+  :root {
+    --bg: #faf9f6;
+    --bg-elevated: #ffffff;
+    --bg-muted: #f3f1ec;
+    --bg-hover: #efece6;
+    --border: #e8e4dc;
+    --border-strong: #d6d1c5;
+    --fg: #1a1814;
+    --fg-muted: #6b6760;
+    --fg-subtle: #97928a;
+    --accent: #b45309;
+    --accent-soft: #fef3c7;
+    --accent-border: #f59e0b;
+    --status-todo: #97928a;
+    --status-progress: #2563eb;
+    --status-review: #7c3aed;
+    --status-done: #059669;
+    --status-blocked: #dc2626;
+    --priority-urgent: #dc2626;
+    --priority-high: #ea580c;
+    --priority-med: #ca8a04;
+    --priority-low: #6b6760;
+    --shadow-sm: 0 1px 2px rgba(20, 18, 14, 0.04);
+    --shadow-md: 0 4px 16px rgba(20, 18, 14, 0.06), 0 1px 2px rgba(20, 18, 14, 0.04);
+    --shadow-lg: 0 24px 60px rgba(20, 18, 14, 0.12), 0 4px 12px rgba(20, 18, 14, 0.06);
+  }
+
+  /* Light Cool */
+  html[data-theme="light-cool"] {
+    --bg: #f7f8fa;
+    --bg-elevated: #ffffff;
+    --bg-muted: #eef1f5;
+    --bg-hover: #e6ebf2;
+    --border: #dce2eb;
+    --border-strong: #b8c2d1;
+    --fg: #0f172a;
+    --fg-muted: #475569;
+    --fg-subtle: #94a3b8;
+    --accent: #2563eb;
+    --accent-soft: #dbeafe;
+    --accent-border: #3b82f6;
+    --status-todo: #94a3b8;
+    --status-progress: #2563eb;
+    --status-review: #7c3aed;
+    --status-done: #059669;
+    --status-blocked: #dc2626;
+    --priority-urgent: #dc2626;
+    --priority-high: #ea580c;
+    --priority-med: #d97706;
+    --priority-low: #64748b;
+    --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04);
+    --shadow-md: 0 4px 16px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04);
+    --shadow-lg: 0 24px 60px rgba(15, 23, 42, 0.12), 0 4px 12px rgba(15, 23, 42, 0.06);
+  }
+
+  /* Dark Warm */
+  html[data-theme="dark"] {
+    --bg: #0f0e0c;
+    --bg-elevated: #1a1816;
+    --bg-muted: #161411;
+    --bg-hover: #252118;
+    --border: #2a2622;
+    --border-strong: #3a3530;
+    --fg: #f0ede5;
+    --fg-muted: #a39e93;
+    --fg-subtle: #6e695f;
+    --accent: #f59e0b;
+    --accent-soft: #3a2a10;
+    --accent-border: #b45309;
+    --status-todo: #6e695f;
+    --status-progress: #60a5fa;
+    --status-review: #a78bfa;
+    --status-done: #34d399;
+    --status-blocked: #f87171;
+    --priority-urgent: #f87171;
+    --priority-high: #fb923c;
+    --priority-med: #fbbf24;
+    --priority-low: #a39e93;
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.3);
+    --shadow-lg: 0 24px 60px rgba(0, 0, 0, 0.6), 0 4px 12px rgba(0, 0, 0, 0.4);
+  }
+
+  /* Dark Cool */
+  html[data-theme="dark-cool"] {
+    --bg: #0a0e14;
+    --bg-elevated: #131820;
+    --bg-muted: #0f141c;
+    --bg-hover: #1c2331;
+    --border: #1f2733;
+    --border-strong: #303a4a;
+    --fg: #e6eaf2;
+    --fg-muted: #94a3b8;
+    --fg-subtle: #5b6675;
+    --accent: #60a5fa;
+    --accent-soft: #1e2a3d;
+    --accent-border: #3b82f6;
+    --status-todo: #5b6675;
+    --status-progress: #60a5fa;
+    --status-review: #a78bfa;
+    --status-done: #34d399;
+    --status-blocked: #f87171;
+    --priority-urgent: #f87171;
+    --priority-high: #fb923c;
+    --priority-med: #fbbf24;
+    --priority-low: #94a3b8;
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.3);
+    --shadow-lg: 0 24px 60px rgba(0, 0, 0, 0.6), 0 4px 12px rgba(0, 0, 0, 0.4);
+  }
+
+  html, body, #root { height: 100%; }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: 'Geist', ui-sans-serif, system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-feature-settings: 'cv11', 'ss01', 'ss03';
+    overflow: hidden;
+  }
+  ::selection { background: var(--accent-soft); color: var(--fg); }
+
+  /* Subtle paper grain on warm-light only (default theme has no data-theme attr) */
+  html:not([data-theme]) body::before, html[data-theme="light"] body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: radial-gradient(rgba(20,18,14,0.012) 1px, transparent 1px);
+    background-size: 3px 3px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: transparent; border-radius: 10px; border: 3px solid transparent; background-clip: content-box; }
+  *:hover::-webkit-scrollbar-thumb { background: var(--border-strong); background-clip: content-box; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--fg-subtle) !important; background-clip: content-box; }
+
+  .bg-app { background: var(--bg); }
+  .bg-elevated { background: var(--bg-elevated); }
+  .bg-muted { background: var(--bg-muted); }
+  .bg-hover { background: var(--bg-hover); }
+  .border-app { border-color: var(--border); }
+  .text-fg { color: var(--fg); }
+  .text-muted { color: var(--fg-muted); }
+  .text-subtle { color: var(--fg-subtle); }
+  .text-accent { color: var(--accent); }
+  .bg-accent-soft { background: var(--accent-soft); }
+  .shadow-soft { box-shadow: var(--shadow-sm); }
+  .shadow-mid { box-shadow: var(--shadow-md); }
+  .shadow-modal { box-shadow: var(--shadow-lg); }
+  .hover-bg-hover:hover { background: var(--bg-hover); }
+  .focus-ring:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .serif { font-family: 'Instrument Serif', Georgia, serif; font-weight: 400; }
+  .mono { font-family: 'Geist Mono', ui-monospace, monospace; }
+
+  .kbd {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 18px; height: 18px;
+    padding: 0 5px;
+    border-radius: 4px;
+    background: var(--bg-muted);
+    border: 1px solid var(--border);
+    color: var(--fg-muted);
+    font-family: 'Geist Mono', monospace;
+    font-size: 10.5px; font-weight: 500; line-height: 1;
+  }
+
+  .cmd-row[data-active="true"] { background: var(--bg-hover); }
+
+  /* Sidebar resize handle */
+  .resize-handle:hover .resize-handle-line {
+    background: var(--border-strong) !important;
+  }
+  .resize-handle.is-resizing .resize-handle-line {
+    background: var(--accent) !important;
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@18.3.1",
+    "react-dom": "https://esm.sh/react-dom@18.3.1",
+    "react-dom/client": "https://esm.sh/react-dom@18.3.1/client",
+    "framer-motion": "https://esm.sh/framer-motion@11.11.17?deps=react@18.3.1,react-dom@18.3.1",
+    "zustand": "https://esm.sh/zustand@4.5.5?deps=react@18.3.1",
+    "zustand/middleware": "https://esm.sh/zustand@4.5.5/middleware?deps=react@18.3.1",
+    "lucide-react": "https://esm.sh/lucide-react@0.453.0?deps=react@18.3.1"
+  }
+}
+</script>
+
+<script type="module">
+import React, { useEffect, useState, useMemo, useRef, useCallback } from 'react';
+import { createRoot } from 'react-dom/client';
+import { createPortal } from 'react-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
+import { Search, Plus, X, ChevronRight, ChevronDown, MoreHorizontal, Check, MessageSquare, AtSign, Inbox, CheckCircle2, Circle, CircleDot, CircleDashed, AlertCircle, Calendar, Clock, User, Users, Bell, Folder, FolderOpen, FolderPlus, FilePlus, List as ListIcon, Zap, Sun, Moon, ChevronUp, ChevronsUp, Equal, ChevronsDown, Trash2, Edit3, GripVertical, ListFilter, ArrowUpDown, PanelLeft, ChevronLeft, Star, LayoutList, KanbanSquare, Copy, Paperclip } from 'lucide-react';
+
+/* ════════════════════════════════════════════════════════════════════════════
+   CONSTANTS
+   ════════════════════════════════════════════════════════════════════════════ */
+
+const STATUSES = [{
+  id: 'backlog',
+  label: 'Backlog',
+  color: 'var(--status-todo)',
+  icon: 'CircleDashed'
+}, {
+  id: 'todo',
+  label: 'Todo',
+  color: 'var(--status-todo)',
+  icon: 'Circle'
+}, {
+  id: 'progress',
+  label: 'In Progress',
+  color: 'var(--status-progress)',
+  icon: 'CircleDot'
+}, {
+  id: 'review',
+  label: 'In Review',
+  color: 'var(--status-review)',
+  icon: 'CircleDot'
+}, {
+  id: 'done',
+  label: 'Done',
+  color: 'var(--status-done)',
+  icon: 'CheckCircle2'
+}, {
+  id: 'blocked',
+  label: 'Blocked',
+  color: 'var(--status-blocked)',
+  icon: 'AlertCircle'
+}];
+const PRIORITIES = [{
+  id: 'urgent',
+  label: 'Urgent',
+  icon: 'ChevronsUp',
+  color: 'var(--priority-urgent)'
+}, {
+  id: 'high',
+  label: 'High',
+  icon: 'ChevronUp',
+  color: 'var(--priority-high)'
+}, {
+  id: 'med',
+  label: 'Medium',
+  icon: 'Equal',
+  color: 'var(--priority-med)'
+}, {
+  id: 'low',
+  label: 'Low',
+  icon: 'ChevronsDown',
+  color: 'var(--priority-low)'
+}, {
+  id: 'none',
+  label: 'No priority',
+  icon: 'MoreHorizontal',
+  color: 'var(--fg-subtle)'
+}];
+const STATUS_ICON_MAP = {
+  CircleDashed,
+  Circle,
+  CircleDot,
+  CheckCircle2,
+  AlertCircle
+};
+const PRIO_ICON_MAP = {
+  ChevronsUp,
+  ChevronUp,
+  Equal,
+  ChevronsDown,
+  MoreHorizontal
+};
+const getStatus = id => STATUSES.find(s => s.id === id) || STATUSES[0];
+const getPriority = id => PRIORITIES.find(p => p.id === id) || PRIORITIES[4];
+const THEMES = [{
+  id: 'light',
+  label: 'Light',
+  mode: 'light',
+  preview: ['#faf9f6', '#1a1814', '#b45309']
+}, {
+  id: 'light-cool',
+  label: 'Light Cool',
+  mode: 'light',
+  preview: ['#f7f8fa', '#0f172a', '#2563eb']
+}, {
+  id: 'dark',
+  label: 'Dark Warm',
+  mode: 'dark',
+  preview: ['#0f0e0c', '#f0ede5', '#f59e0b']
+}, {
+  id: 'dark-cool',
+  label: 'Dark Cool',
+  mode: 'dark',
+  preview: ['#0a0e14', '#e6eaf2', '#60a5fa']
+}];
+
+/* ════════════════════════════════════════════════════════════════════════════
+   MOCK DATA
+   ════════════════════════════════════════════════════════════════════════════ */
+
+const MEMBERS = [{
+  id: 'u1',
+  name: 'Maya Chen',
+  initials: 'MC',
+  color: '#f59e0b'
+}, {
+  id: 'u2',
+  name: 'Theo Park',
+  initials: 'TP',
+  color: '#2563eb'
+}, {
+  id: 'u3',
+  name: 'Aisha Rahman',
+  initials: 'AR',
+  color: '#7c3aed'
+}, {
+  id: 'u4',
+  name: 'Jonas Weber',
+  initials: 'JW',
+  color: '#059669'
+}, {
+  id: 'u5',
+  name: 'Priya Sharma',
+  initials: 'PS',
+  color: '#dc2626'
+}, {
+  id: 'u6',
+  name: 'You',
+  initials: 'CA',
+  color: '#0f766e'
+}];
+const today = new Date();
+const dayOffset = n => {
+  const d = new Date(today);
+  d.setDate(d.getDate() + n);
+  return d.toISOString();
+};
+
+/*
+  Spaces tree structure:
+  - Each space has nodes[] of List | Folder | SprintFolder
+  - Folder/SprintFolder have children[] which can recurse
+  - List has taskIds[]
+*/
+
+const SEED_SPACES = [{
+  id: 'sp1',
+  name: 'Product',
+  icon: '🟡',
+  color: '#f59e0b',
+  nodes: [{
+    id: 'l1',
+    type: 'list',
+    name: 'Roadmap',
+    taskIds: ['t1', 't2', 't3']
+  }, {
+    id: 'f1',
+    type: 'folder',
+    name: 'Q4 Launch',
+    children: [{
+      id: 'l2',
+      type: 'list',
+      name: 'Marketing',
+      taskIds: ['t4', 't5']
+    }, {
+      id: 'l3',
+      type: 'list',
+      name: 'Engineering',
+      taskIds: ['t6', 't7', 't8']
+    }, {
+      id: 'sf1',
+      type: 'sprint',
+      name: 'Sprint 23',
+      startDate: dayOffset(-3),
+      endDate: dayOffset(11),
+      children: [{
+        id: 'l4',
+        type: 'list',
+        name: 'Sprint backlog',
+        taskIds: ['t9', 't10']
+      }]
+    }]
+  }, {
+    id: 'l5',
+    type: 'list',
+    name: 'Backlog',
+    taskIds: ['t11']
+  }]
+}, {
+  id: 'sp2',
+  name: 'Design',
+  icon: '🟣',
+  color: '#7c3aed',
+  nodes: [{
+    id: 'l6',
+    type: 'list',
+    name: 'Components',
+    taskIds: ['t12', 't13']
+  }, {
+    id: 'l7',
+    type: 'list',
+    name: 'Research',
+    taskIds: ['t14']
+  }]
+}, {
+  id: 'sp3',
+  name: 'Engineering',
+  icon: '🔵',
+  color: '#2563eb',
+  nodes: [{
+    id: 'f2',
+    type: 'folder',
+    name: 'Mobile App',
+    children: [{
+      id: 'l8',
+      type: 'list',
+      name: 'iOS',
+      taskIds: ['t15']
+    }, {
+      id: 'l9',
+      type: 'list',
+      name: 'Android',
+      taskIds: []
+    }]
+  }]
+}];
+const PERSONAL_LISTS = [{
+  id: 'pl1',
+  type: 'list',
+  name: 'Today',
+  taskIds: ['pt1', 'pt2']
+}, {
+  id: 'pl2',
+  type: 'list',
+  name: 'Read later',
+  taskIds: ['pt3']
+}];
+const SEED_TASKS = [
+// Product / Roadmap
+{
+  id: 't1',
+  listId: 'l1',
+  title: 'Define Q1 roadmap themes',
+  status: 'progress',
+  priority: 'high',
+  due: dayOffset(2),
+  assigneeId: 'u6',
+  description: 'Three themes max. Coordinate with leadership.',
+  subtasks: [{
+    id: 's1',
+    title: 'Theme: Mobile',
+    done: true
+  }, {
+    id: 's2',
+    title: 'Theme: Collaboration',
+    done: false
+  }, {
+    id: 's3',
+    title: 'Theme: AI integrations',
+    done: false
+  }],
+  comments: [{
+    id: 'c1',
+    userId: 'u2',
+    body: '@you can you sync with leadership before Friday? Need their input on AI direction.',
+    ts: dayOffset(-1),
+    mentions: ['u6']
+  }]
+}, {
+  id: 't2',
+  listId: 'l1',
+  title: 'Customer interviews — synthesis',
+  status: 'todo',
+  priority: 'med',
+  due: dayOffset(5),
+  assigneeId: 'u3',
+  description: '',
+  subtasks: [],
+  comments: []
+}, {
+  id: 't3',
+  listId: 'l1',
+  title: 'Pricing page experiment results',
+  status: 'review',
+  priority: 'med',
+  due: dayOffset(0),
+  assigneeId: 'u6',
+  description: '',
+  subtasks: [],
+  comments: [{
+    id: 'c2',
+    userId: 'u1',
+    body: '@you the numbers look good — let\'s ship it.',
+    ts: dayOffset(-1),
+    mentions: ['u6']
+  }]
+},
+// Q4 Launch / Marketing
+{
+  id: 't4',
+  listId: 'l2',
+  title: 'Finalize landing page copy',
+  status: 'progress',
+  priority: 'high',
+  due: dayOffset(2),
+  assigneeId: 'u1',
+  description: 'Hero, features, FAQ. Legal review pending.',
+  subtasks: [{
+    id: 's4',
+    title: 'Hero',
+    done: true
+  }, {
+    id: 's5',
+    title: 'Features',
+    done: false
+  }],
+  comments: []
+}, {
+  id: 't5',
+  listId: 'l2',
+  title: 'Email sequence for waitlist',
+  status: 'todo',
+  priority: 'med',
+  due: dayOffset(7),
+  assigneeId: 'u6',
+  description: '',
+  subtasks: [],
+  comments: []
+},
+// Q4 Launch / Engineering
+{
+  id: 't6',
+  listId: 'l3',
+  title: 'Production checklist review',
+  status: 'review',
+  priority: 'high',
+  due: dayOffset(1),
+  assigneeId: 'u4',
+  description: '',
+  subtasks: [],
+  comments: []
+}, {
+  id: 't7',
+  listId: 'l3',
+  title: 'Set up analytics dashboards',
+  status: 'backlog',
+  priority: 'low',
+  due: dayOffset(10),
+  assigneeId: 'u4',
+  description: '',
+  subtasks: [],
+  comments: []
+}, {
+  id: 't8',
+  listId: 'l3',
+  title: 'API rate limiting',
+  status: 'done',
+  priority: 'med',
+  due: dayOffset(-5),
+  assigneeId: 'u4',
+  description: '',
+  subtasks: [],
+  comments: []
+},
+// Sprint 23 / Sprint backlog
+{
+  id: 't9',
+  listId: 'l4',
+  title: 'Push notification reliability',
+  status: 'progress',
+  priority: 'urgent',
+  due: dayOffset(-1),
+  assigneeId: 'u6',
+  description: '',
+  subtasks: [],
+  comments: [{
+    id: 'c3',
+    userId: 'u4',
+    body: '@you blocked on iOS provisioning, ETA Tuesday.',
+    ts: dayOffset(-1),
+    mentions: ['u6']
+  }]
+}, {
+  id: 't10',
+  listId: 'l4',
+  title: 'Onboarding flow redesign',
+  status: 'todo',
+  priority: 'high',
+  due: dayOffset(4),
+  assigneeId: 'u2',
+  description: '',
+  subtasks: [],
+  comments: []
+},
+// Backlog
+{
+  id: 't11',
+  listId: 'l5',
+  title: 'Rate limiting dashboards',
+  status: 'backlog',
+  priority: 'low',
+  due: null,
+  assigneeId: null,
+  description: '',
+  subtasks: [],
+  comments: []
+},
+// Design / Components
+{
+  id: 't12',
+  listId: 'l6',
+  title: 'Button component — variants',
+  status: 'review',
+  priority: 'med',
+  due: dayOffset(0),
+  assigneeId: 'u1',
+  description: '',
+  subtasks: [],
+  comments: []
+}, {
+  id: 't13',
+  listId: 'l6',
+  title: 'Form input states',
+  status: 'todo',
+  priority: 'med',
+  due: dayOffset(8),
+  assigneeId: 'u3',
+  description: '',
+  subtasks: [],
+  comments: []
+}, {
+  id: 't14',
+  listId: 'l7',
+  title: 'Synthesize round 2 interviews',
+  status: 'progress',
+  priority: 'high',
+  due: dayOffset(1),
+  assigneeId: 'u3',
+  description: '',
+  subtasks: [],
+  comments: []
+},
+// Engineering / Mobile / iOS
+{
+  id: 't15',
+  listId: 'l8',
+  title: 'iOS 18 compatibility audit',
+  status: 'todo',
+  priority: 'med',
+  due: dayOffset(6),
+  assigneeId: 'u6',
+  description: '',
+  subtasks: [],
+  comments: [{
+    id: 'c4',
+    userId: 'u2',
+    body: '@you flagging this for your awareness — might affect roadmap.',
+    ts: dayOffset(-2),
+    mentions: ['u6']
+  }]
+},
+// Personal lists
+{
+  id: 'pt1',
+  listId: 'pl1',
+  title: 'Reply to investor email',
+  status: 'todo',
+  priority: 'high',
+  due: dayOffset(0),
+  assigneeId: 'u6',
+  description: '',
+  subtasks: [],
+  comments: []
+}, {
+  id: 'pt2',
+  listId: 'pl1',
+  title: 'Book dentist appointment',
+  status: 'todo',
+  priority: 'low',
+  due: dayOffset(0),
+  assigneeId: 'u6',
+  description: '',
+  subtasks: [],
+  comments: []
+}, {
+  id: 'pt3',
+  listId: 'pl2',
+  title: 'Read "The Design of Everyday Things"',
+  status: 'todo',
+  priority: 'low',
+  due: null,
+  assigneeId: 'u6',
+  description: '',
+  subtasks: [],
+  comments: []
+}];
+
+/* ════════════════════════════════════════════════════════════════════════════
+   STORES
+   ════════════════════════════════════════════════════════════════════════════ */
+
+const useUIStore = create(persist(set => ({
+  themeId: 'light',
+  sidebarCollapsed: false,
+  sidebarWidth: 268,
+  commandOpen: false,
+  selectedTaskId: null,
+  expanded: {},
+  setThemeId: id => set({
+    themeId: id
+  }),
+  toggleSidebar: () => set(s => ({
+    sidebarCollapsed: !s.sidebarCollapsed
+  })),
+  setSidebarWidth: w => set({
+    sidebarWidth: Math.max(220, Math.min(480, w))
+  }),
+  setCommandOpen: v => set({
+    commandOpen: v
+  }),
+  selectTask: id => set({
+    selectedTaskId: id
+  }),
+  toggleExpand: id => set(s => ({
+    expanded: {
+      ...s.expanded,
+      [id]: !s.expanded[id]
+    }
+  })),
+  setExpanded: (id, v) => set(s => ({
+    expanded: {
+      ...s.expanded,
+      [id]: v
+    }
+  }))
+}), {
+  name: 'tessera-ui',
+  partialize: s => ({
+    themeId: s.themeId,
+    sidebarCollapsed: s.sidebarCollapsed,
+    sidebarWidth: s.sidebarWidth,
+    expanded: s.expanded
+  })
+}));
+
+/* Helpers for tree mutation */
+const findNodeAndParent = (nodes, id, parent = null) => {
+  for (const n of nodes) {
+    if (n.id === id) return {
+      node: n,
+      parent,
+      list: nodes
+    };
+    if (n.children) {
+      const found = findNodeAndParent(n.children, id, n);
+      if (found) return found;
+    }
+  }
+  return null;
+};
+const cloneTreeRemove = (nodes, id) => nodes.flatMap(n => {
+  if (n.id === id) return [];
+  if (n.children) return [{
+    ...n,
+    children: cloneTreeRemove(n.children, id)
+  }];
+  return [n];
+});
+const cloneTreeUpdate = (nodes, id, patch) => nodes.map(n => {
+  if (n.id === id) return {
+    ...n,
+    ...patch
+  };
+  if (n.children) return {
+    ...n,
+    children: cloneTreeUpdate(n.children, id, patch)
+  };
+  return n;
+});
+const cloneTreeAddChild = (nodes, parentId, child) => nodes.map(n => {
+  if (n.id === parentId) return {
+    ...n,
+    children: [...(n.children || []), child]
+  };
+  if (n.children) return {
+    ...n,
+    children: cloneTreeAddChild(n.children, parentId, child)
+  };
+  return n;
+});
+const newId = prefix => prefix + Math.random().toString(36).slice(2, 8);
+const useWorkspaceStore = create(set => ({
+  workspaceName: 'Ketto',
+  members: MEMBERS,
+  spaces: SEED_SPACES,
+  personalLists: PERSONAL_LISTS,
+  trash: [],
+  /* Array of { kind, item, deletedAt, originalLocation } */
+
+  /* Spaces */
+  addSpace: name => set(s => ({
+    spaces: [...s.spaces, {
+      id: newId('sp'),
+      name,
+      icon: '◉',
+      color: '#6b6760',
+      nodes: []
+    }]
+  })),
+  updateSpace: (id, patch) => set(s => ({
+    spaces: s.spaces.map(sp => sp.id === id ? {
+      ...sp,
+      ...patch
+    } : sp)
+  })),
+  deleteSpace: id => set(s => {
+    const space = s.spaces.find(sp => sp.id === id);
+    if (!space) return s;
+    return {
+      spaces: s.spaces.filter(sp => sp.id !== id),
+      trash: [...s.trash, {
+        kind: 'space',
+        item: space,
+        deletedAt: new Date().toISOString()
+      }]
+    };
+  }),
+  /* Nodes inside a space — add at root or inside a folder */
+  addNode: (spaceId, parentId, node) => set(s => ({
+    spaces: s.spaces.map(sp => {
+      if (sp.id !== spaceId) return sp;
+      if (!parentId) return {
+        ...sp,
+        nodes: [...sp.nodes, node]
+      };
+      return {
+        ...sp,
+        nodes: cloneTreeAddChild(sp.nodes, parentId, node)
+      };
+    })
+  })),
+  updateNode: (spaceId, nodeId, patch) => set(s => ({
+    spaces: s.spaces.map(sp => sp.id === spaceId ? {
+      ...sp,
+      nodes: cloneTreeUpdate(sp.nodes, nodeId, patch)
+    } : sp)
+  })),
+  deleteNode: (spaceId, nodeId) => set(s => {
+    /* Find the node before removing so we can trash it */
+    const sp = s.spaces.find(sp => sp.id === spaceId);
+    if (!sp) return s;
+    const found = findNodeAndParent(sp.nodes, nodeId);
+    if (!found) return s;
+    return {
+      spaces: s.spaces.map(sp => sp.id === spaceId ? {
+        ...sp,
+        nodes: cloneTreeRemove(sp.nodes, nodeId)
+      } : sp),
+      trash: [...s.trash, {
+        kind: 'node',
+        item: found.node,
+        spaceId,
+        parentId: found.parent?.id || null,
+        deletedAt: new Date().toISOString()
+      }]
+    };
+  }),
+  /* Move a node from one location to another. targetParentId=null means space root. */
+  moveNode: (nodeId, targetSpaceId, targetParentId) => set(s => {
+    /* Find and extract */
+    let extracted = null;
+    let sourceSpaceId = null;
+    for (const sp of s.spaces) {
+      const r = findNodeAndParent(sp.nodes, nodeId);
+      if (r) {
+        extracted = r.node;
+        sourceSpaceId = sp.id;
+        break;
+      }
+    }
+    if (!extracted) return s;
+    /* Prevent moving into self/descendant */
+    const isDescendant = (node, targetId) => {
+      if (!node.children) return false;
+      for (const c of node.children) {
+        if (c.id === targetId) return true;
+        if (isDescendant(c, targetId)) return true;
+      }
+      return false;
+    };
+    if (targetParentId && (extracted.id === targetParentId || isDescendant(extracted, targetParentId))) {
+      return s;
+    }
+    const spacesAfterRemove = s.spaces.map(sp => sp.id === sourceSpaceId ? {
+      ...sp,
+      nodes: cloneTreeRemove(sp.nodes, nodeId)
+    } : sp);
+    /* Insert in target */
+    return {
+      spaces: spacesAfterRemove.map(sp => {
+        if (sp.id !== targetSpaceId) return sp;
+        if (!targetParentId) return {
+          ...sp,
+          nodes: [...sp.nodes, extracted]
+        };
+        return {
+          ...sp,
+          nodes: cloneTreeAddChild(sp.nodes, targetParentId, extracted)
+        };
+      })
+    };
+  }),
+  /* Personal lists */
+  addPersonalList: name => set(s => ({
+    personalLists: [...s.personalLists, {
+      id: newId('pl'),
+      type: 'list',
+      name,
+      taskIds: []
+    }]
+  })),
+  updatePersonalList: (id, patch) => set(s => ({
+    personalLists: s.personalLists.map(l => l.id === id ? {
+      ...l,
+      ...patch
+    } : l)
+  })),
+  deletePersonalList: id => set(s => {
+    const list = s.personalLists.find(l => l.id === id);
+    if (!list) return s;
+    return {
+      personalLists: s.personalLists.filter(l => l.id !== id),
+      trash: [...s.trash, {
+        kind: 'personalList',
+        item: list,
+        deletedAt: new Date().toISOString()
+      }]
+    };
+  }),
+  /* Trash */
+  restoreFromTrash: deletedAt => set(s => {
+    const entry = s.trash.find(t => t.deletedAt === deletedAt);
+    if (!entry) return s;
+    const newTrash = s.trash.filter(t => t.deletedAt !== deletedAt);
+    if (entry.kind === 'space') {
+      return {
+        spaces: [...s.spaces, entry.item],
+        trash: newTrash
+      };
+    }
+    if (entry.kind === 'node') {
+      const targetSpace = s.spaces.find(sp => sp.id === entry.spaceId);
+      if (!targetSpace) {
+        /* Origin space is gone — drop into first available space */
+        if (s.spaces.length === 0) return s;
+        return {
+          spaces: s.spaces.map((sp, i) => i === 0 ? {
+            ...sp,
+            nodes: [...sp.nodes, entry.item]
+          } : sp),
+          trash: newTrash
+        };
+      }
+      if (!entry.parentId) {
+        return {
+          spaces: s.spaces.map(sp => sp.id === entry.spaceId ? {
+            ...sp,
+            nodes: [...sp.nodes, entry.item]
+          } : sp),
+          trash: newTrash
+        };
+      }
+      /* Try to insert into original parent if it still exists */
+      const parentExists = findNodeAndParent(targetSpace.nodes, entry.parentId);
+      if (parentExists) {
+        return {
+          spaces: s.spaces.map(sp => sp.id === entry.spaceId ? {
+            ...sp,
+            nodes: cloneTreeAddChild(sp.nodes, entry.parentId, entry.item)
+          } : sp),
+          trash: newTrash
+        };
+      }
+      /* Parent gone — drop at space root */
+      return {
+        spaces: s.spaces.map(sp => sp.id === entry.spaceId ? {
+          ...sp,
+          nodes: [...sp.nodes, entry.item]
+        } : sp),
+        trash: newTrash
+      };
+    }
+    if (entry.kind === 'personalList') {
+      return {
+        personalLists: [...s.personalLists, entry.item],
+        trash: newTrash
+      };
+    }
+    return s;
+  }),
+  removeFromTrash: deletedAt => set(s => ({
+    trash: s.trash.filter(t => t.deletedAt !== deletedAt)
+  })),
+  emptyTrash: () => set({
+    trash: []
+  }),
+  /* Lookups */
+  findList: id => {
+    const state = useWorkspaceStore.getState();
+    for (const sp of state.spaces) {
+      const r = findNodeAndParent(sp.nodes, id);
+      if (r && r.node.type === 'list') return {
+        list: r.node,
+        spaceId: sp.id,
+        isPersonal: false
+      };
+    }
+    const pl = state.personalLists.find(l => l.id === id);
+    if (pl) return {
+      list: pl,
+      spaceId: null,
+      isPersonal: true
+    };
+    return null;
+  },
+  findNode: id => {
+    const state = useWorkspaceStore.getState();
+    for (const sp of state.spaces) {
+      const r = findNodeAndParent(sp.nodes, id);
+      if (r) return {
+        ...r,
+        spaceId: sp.id
+      };
+    }
+    return null;
+  }
+}));
+const useTaskStore = create((set, get) => ({
+  tasks: SEED_TASKS,
+  getTasksByListId: listId => get().tasks.filter(t => t.listId === listId),
+  getMyTasks: () => get().tasks.filter(t => t.assigneeId === 'u6'),
+  getMyTodayOverdue: () => get().tasks.filter(t => {
+    if (t.assigneeId !== 'u6' || t.status === 'done') return false;
+    if (!t.due) return false;
+    const d = new Date(t.due);
+    d.setHours(0, 0, 0, 0);
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
+    return d <= now;
+  }),
+  getMyMentions: () => get().tasks.filter(t => (t.comments || []).some(c => (c.mentions || []).includes('u6'))),
+  updateTask: (id, patch) => set(s => ({
+    tasks: s.tasks.map(t => t.id === id ? {
+      ...t,
+      ...patch
+    } : t)
+  })),
+  setStatus: (id, status) => set(s => ({
+    tasks: s.tasks.map(t => t.id === id ? {
+      ...t,
+      status
+    } : t)
+  })),
+  setPriority: (id, priority) => set(s => ({
+    tasks: s.tasks.map(t => t.id === id ? {
+      ...t,
+      priority
+    } : t)
+  })),
+  setAssignee: (id, assigneeId) => set(s => ({
+    tasks: s.tasks.map(t => t.id === id ? {
+      ...t,
+      assigneeId
+    } : t)
+  })),
+  addTask: (listId, partial) => {
+    const id = newId('t');
+    set(s => ({
+      tasks: [...s.tasks, {
+        id,
+        listId,
+        title: 'New task',
+        status: 'todo',
+        priority: 'none',
+        due: null,
+        assigneeId: 'u6',
+        description: '',
+        subtasks: [],
+        comments: [],
+        ...partial
+      }]
+    }));
+    return id;
+  },
+  deleteTask: id => set(s => ({
+    tasks: s.tasks.filter(t => t.id !== id)
+  })),
+  /* Subtasks */
+  toggleSubtask: (taskId, subId) => set(s => ({
+    tasks: s.tasks.map(t => t.id === taskId ? {
+      ...t,
+      subtasks: t.subtasks.map(st => st.id === subId ? {
+        ...st,
+        done: !st.done
+      } : st)
+    } : t)
+  })),
+  addSubtask: (taskId, title) => set(s => ({
+    tasks: s.tasks.map(t => t.id === taskId ? {
+      ...t,
+      subtasks: [...(t.subtasks || []), {
+        id: newId('s'),
+        title,
+        done: false
+      }]
+    } : t)
+  })),
+  updateSubtask: (taskId, subId, patch) => set(s => ({
+    tasks: s.tasks.map(t => t.id === taskId ? {
+      ...t,
+      subtasks: t.subtasks.map(st => st.id === subId ? {
+        ...st,
+        ...patch
+      } : st)
+    } : t)
+  })),
+  deleteSubtask: (taskId, subId) => set(s => ({
+    tasks: s.tasks.map(t => t.id === taskId ? {
+      ...t,
+      subtasks: t.subtasks.filter(st => st.id !== subId)
+    } : t)
+  })),
+  /* Comments */
+  addComment: (taskId, body, mentions = []) => set(s => ({
+    tasks: s.tasks.map(t => t.id === taskId ? {
+      ...t,
+      comments: [...(t.comments || []), {
+        id: newId('c'),
+        userId: 'u6',
+        body,
+        ts: new Date().toISOString(),
+        mentions
+      }]
+    } : t)
+  }))
+}));
+
+/* ════════════════════════════════════════════════════════════════════════════
+   ROUTING
+   ════════════════════════════════════════════════════════════════════════════ */
+
+const useRoute = () => {
+  const [route, setRoute] = useState(window.location.hash.slice(1) || '/me/assigned');
+  useEffect(() => {
+    const onHash = () => setRoute(window.location.hash.slice(1) || '/me/assigned');
+    window.addEventListener('hashchange', onHash);
+    return () => window.removeEventListener('hashchange', onHash);
+  }, []);
+  const navigate = path => {
+    window.location.hash = path;
+  };
+  return {
+    route,
+    navigate
+  };
+};
+
+/* ════════════════════════════════════════════════════════════════════════════
+   PRIMITIVES
+   ════════════════════════════════════════════════════════════════════════════ */
+
+const Avatar = ({
+  user,
+  size = 'sm'
+}) => {
+  if (!user) return /*#__PURE__*/React.createElement("div", {
+    className: "rounded-full border border-dashed flex items-center justify-center",
+    style: {
+      width: size === 'sm' ? 22 : 28,
+      height: size === 'sm' ? 22 : 28,
+      borderColor: 'var(--border-strong)',
+      color: 'var(--fg-subtle)'
+    }
+  }, /*#__PURE__*/React.createElement(User, {
+    size: size === 'sm' ? 11 : 13
+  }));
+  const dim = size === 'sm' ? 22 : size === 'md' ? 28 : 36;
+  return /*#__PURE__*/React.createElement("div", {
+    className: "rounded-full flex items-center justify-center text-white font-medium shrink-0",
+    style: {
+      width: dim,
+      height: dim,
+      background: user.color,
+      fontSize: dim * 0.42
+    }
+  }, user.initials);
+};
+const StatusIcon = ({
+  statusId,
+  size = 14
+}) => {
+  const s = getStatus(statusId);
+  const Icon = STATUS_ICON_MAP[s.icon] || Circle;
+  return /*#__PURE__*/React.createElement(Icon, {
+    size: size,
+    style: {
+      color: s.color
+    },
+    strokeWidth: 2
+  });
+};
+const PriorityIcon = ({
+  priorityId,
+  size = 14
+}) => {
+  const p = getPriority(priorityId);
+  const Icon = PRIO_ICON_MAP[p.icon] || MoreHorizontal;
+  return /*#__PURE__*/React.createElement(Icon, {
+    size: size,
+    style: {
+      color: p.color
+    },
+    strokeWidth: 2.2
+  });
+};
+const Kbd = ({
+  children
+}) => /*#__PURE__*/React.createElement("span", {
+  className: "kbd"
+}, children);
+const formatDue = (iso, verbose = false) => {
+  if (!iso) return null;
+  const d = new Date(iso);
+  const now = new Date();
+  now.setHours(0, 0, 0, 0);
+  const target = new Date(d);
+  target.setHours(0, 0, 0, 0);
+  const diff = Math.round((target - now) / 86400000);
+  if (diff === 0) return {
+    label: 'Today',
+    tone: 'warn'
+  };
+  if (diff === 1) return {
+    label: 'Tomorrow',
+    tone: 'normal'
+  };
+  if (diff === -1) return {
+    label: 'Yesterday',
+    tone: 'overdue'
+  };
+  if (diff < 0) return {
+    label: verbose ? `${Math.abs(diff)} days overdue` : `${Math.abs(diff)}d overdue`,
+    tone: 'overdue'
+  };
+  if (diff < 7) return {
+    label: verbose ? `In ${diff} days` : `${diff}d`,
+    tone: 'normal'
+  };
+  return {
+    label: d.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric'
+    }),
+    tone: 'normal'
+  };
+};
+const DueChip = ({
+  iso,
+  verbose = false,
+  showIcon = true
+}) => {
+  const f = formatDue(iso, verbose);
+  if (!f) return null;
+  const color = f.tone === 'overdue' ? 'var(--priority-urgent)' : f.tone === 'warn' ? 'var(--priority-high)' : 'var(--fg-muted)';
+  return /*#__PURE__*/React.createElement("span", {
+    className: "inline-flex items-center gap-1 text-[12px] whitespace-nowrap",
+    style: {
+      color
+    }
+  }, showIcon && /*#__PURE__*/React.createElement(Calendar, {
+    size: 12,
+    strokeWidth: 2
+  }), f.label);
+};
+const Tip = ({
+  label,
+  hotkey,
+  children,
+  side = 'bottom'
+}) => {
+  const [show, setShow] = useState(false);
+  return /*#__PURE__*/React.createElement("span", {
+    className: "relative inline-flex",
+    onMouseEnter: () => setShow(true),
+    onMouseLeave: () => setShow(false),
+    onFocus: () => setShow(true),
+    onBlur: () => setShow(false)
+  }, children, /*#__PURE__*/React.createElement(AnimatePresence, null, show && /*#__PURE__*/React.createElement(motion.span, {
+    initial: {
+      opacity: 0,
+      y: side === 'bottom' ? -4 : 4
+    },
+    animate: {
+      opacity: 1,
+      y: 0
+    },
+    exit: {
+      opacity: 0,
+      y: side === 'bottom' ? -4 : 4
+    },
+    transition: {
+      duration: 0.12
+    },
+    className: `absolute z-[300] ${side === 'bottom' ? 'top-full mt-1.5' : 'bottom-full mb-1.5'} left-1/2 -translate-x-1/2 px-2 py-1 rounded-md whitespace-nowrap pointer-events-none flex items-center gap-1.5`,
+    style: {
+      background: 'var(--fg)',
+      color: 'var(--bg)',
+      fontSize: 11.5,
+      fontWeight: 500,
+      boxShadow: 'var(--shadow-md)'
+    }
+  }, label, hotkey && /*#__PURE__*/React.createElement("span", {
+    className: "opacity-70 mono",
+    style: {
+      fontSize: 10.5
+    }
+  }, hotkey))));
+};
+const Popover = ({
+  trigger,
+  children,
+  align = 'start',
+  width = 220,
+  side = 'bottom'
+}) => {
+  const [open, setOpen] = useState(false);
+  const [pos, setPos] = useState({
+    top: 0,
+    left: 0
+  });
+  const triggerRef = useRef(null);
+  const popoverRef = useRef(null);
+
+  /* Position calculation — runs every time we open. */
+  const updatePosition = useCallback(() => {
+    if (!triggerRef.current) return;
+    const r = triggerRef.current.getBoundingClientRect();
+    const margin = 6;
+    const ph = popoverRef.current?.offsetHeight || 0;
+
+    /* Compute initial top:
+       - side="bottom" (default): drop below trigger
+       - side="top": position above, anchored by trigger.top */
+    let top = side === 'top' ? r.top - margin - ph : r.bottom + margin;
+    let left = align === 'end' ? r.right - width : r.left;
+
+    /* Clamp horizontally */
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    if (left + width > vw - 8) left = vw - width - 8;
+    if (left < 8) left = 8;
+
+    /* Vertical clamp + flip */
+    if (ph > 0) {
+      if (side !== 'top') {
+        /* Going down — flip up if it would overflow */
+        if (top + ph > vh - 8) top = r.top - ph - margin;
+      } else {
+        /* Going up — flip down if it would overflow above */
+        if (top < 8) top = r.bottom + margin;
+      }
+      /* Final clamp: keep popover fully on screen */
+      if (top + ph > vh - 8) top = Math.max(8, vh - ph - 8);
+      if (top < 8) top = 8;
+    }
+    setPos({
+      top,
+      left
+    });
+  }, [align, width, side]);
+  useEffect(() => {
+    if (!open) return;
+    updatePosition();
+    /* Reposition on scroll/resize so menu sticks to its trigger */
+    const onScroll = () => updatePosition();
+    const onResize = () => updatePosition();
+    window.addEventListener('scroll', onScroll, true);
+    window.addEventListener('resize', onResize);
+    return () => {
+      window.removeEventListener('scroll', onScroll, true);
+      window.removeEventListener('resize', onResize);
+    };
+  }, [open, updatePosition]);
+
+  /* Re-measure when popover content size changes (e.g. submenu navigation) */
+  useEffect(() => {
+    if (!open || !popoverRef.current) return;
+    if (typeof ResizeObserver === 'undefined') return;
+    const ro = new ResizeObserver(() => updatePosition());
+    ro.observe(popoverRef.current);
+    return () => ro.disconnect();
+  }, [open, updatePosition]);
+
+  /* Outside-click + Escape to dismiss */
+  useEffect(() => {
+    if (!open) return;
+    const onClick = e => {
+      if (popoverRef.current?.contains(e.target)) return;
+      if (triggerRef.current?.contains(e.target)) return;
+      setOpen(false);
+    };
+    const onKey = e => {
+      if (e.key === 'Escape') setOpen(false);
+    };
+    document.addEventListener('mousedown', onClick);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onClick);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [open]);
+
+  /* Re-measure once popover renders so vertical-flip can use real height */
+  useEffect(() => {
+    if (open) {
+      const id = requestAnimationFrame(updatePosition);
+      return () => cancelAnimationFrame(id);
+    }
+  }, [open, updatePosition]);
+  return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("span", {
+    ref: triggerRef,
+    onClick: e => {
+      e.stopPropagation();
+      setOpen(o => !o);
+    }
+  }, trigger), open && /*#__PURE__*/createPortal(/*#__PURE__*/React.createElement(AnimatePresence, null, /*#__PURE__*/React.createElement(motion.div, {
+    ref: popoverRef,
+    initial: {
+      opacity: 0,
+      y: -4,
+      scale: 0.98
+    },
+    animate: {
+      opacity: 1,
+      y: 0,
+      scale: 1
+    },
+    exit: {
+      opacity: 0,
+      y: -4,
+      scale: 0.98
+    },
+    transition: {
+      duration: 0.12,
+      ease: 'easeOut'
+    },
+    className: "fixed z-[200] rounded-lg shadow-modal border overflow-hidden",
+    style: {
+      top: pos.top,
+      left: pos.left,
+      width,
+      background: 'var(--bg-elevated)',
+      borderColor: 'var(--border)'
+    },
+    onClick: e => e.stopPropagation()
+  }, typeof children === 'function' ? children({
+    close: () => setOpen(false)
+  }) : children)), document.body));
+};
+const ContextMenuItem = ({
+  item,
+  onClose
+}) => {
+  const [showSub, setShowSub] = useState(false);
+  const [subPos, setSubPos] = useState({
+    top: 0,
+    left: 0
+  });
+  const itemRef = useRef(null);
+  const subRef = useRef(null);
+  const Icon = item.icon;
+  if (item.submenu) {
+    const positionSub = () => {
+      if (!itemRef.current) return;
+      const r = itemRef.current.getBoundingClientRect();
+      const subW = 240;
+      const margin = 8;
+      let left = r.right + 2;
+      let top = r.top;
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      /* Flip to left if no room on right */
+      if (left + subW > vw - margin) left = r.left - subW - 2;
+      const subH = Math.min(item.submenu.length * 32 + 8, 320);
+      if (top + subH > vh - margin) top = vh - subH - margin;
+      setSubPos({
+        top,
+        left
+      });
+    };
+    return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("button", {
+      ref: itemRef,
+      onMouseEnter: () => {
+        setShowSub(true);
+        requestAnimationFrame(positionSub);
+      },
+      onMouseLeave: () => {
+        /* Delay so user can move mouse into submenu */
+        setTimeout(() => {
+          if (subRef.current && subRef.current.matches(':hover')) return;
+          setShowSub(false);
+        }, 100);
+      },
+      className: "w-full flex items-center gap-2.5 px-2.5 h-8 hover-bg-hover transition-colors text-[13px] text-left",
+      style: {
+        background: showSub ? 'var(--bg-hover)' : 'transparent'
+      }
+    }, Icon && /*#__PURE__*/React.createElement(Icon, {
+      size: 13,
+      className: "shrink-0",
+      style: {
+        color: 'var(--fg-muted)'
+      }
+    }), /*#__PURE__*/React.createElement("span", {
+      className: "flex-1 truncate"
+    }, item.label), /*#__PURE__*/React.createElement(ChevronRight, {
+      size: 12,
+      className: "shrink-0",
+      style: {
+        color: 'var(--fg-subtle)'
+      }
+    })), showSub && /*#__PURE__*/createPortal(/*#__PURE__*/React.createElement("div", {
+      ref: subRef,
+      onMouseEnter: () => setShowSub(true),
+      onMouseLeave: () => setShowSub(false),
+      className: "fixed z-[210] rounded-lg shadow-modal border overflow-hidden",
+      style: {
+        top: subPos.top,
+        left: subPos.left,
+        width: 240,
+        background: 'var(--bg-elevated)',
+        borderColor: 'var(--border)'
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "py-1 max-h-[320px] overflow-y-auto"
+    }, item.submenu.length === 0 ? /*#__PURE__*/React.createElement("div", {
+      className: "px-3 py-3 text-[12px] text-center italic",
+      style: {
+        color: 'var(--fg-subtle)'
+      }
+    }, item.emptyLabel || 'No options') : item.submenu.map((sub, i) => /*#__PURE__*/React.createElement("button", {
+      key: i,
+      onClick: () => {
+        sub.onClick();
+        onClose();
+      },
+      className: "w-full flex items-center gap-2 h-8 hover-bg-hover transition-colors text-[12.5px] text-left",
+      style: {
+        paddingLeft: 10 + (sub.indent || 0) * 12,
+        paddingRight: 10
+      }
+    }, sub.dot && /*#__PURE__*/React.createElement("span", {
+      className: "w-2.5 h-2.5 rounded-sm shrink-0",
+      style: {
+        background: sub.dot
+      }
+    }), sub.icon && /*#__PURE__*/React.createElement(sub.icon, {
+      size: 11,
+      className: "shrink-0",
+      style: {
+        color: sub.iconColor || 'var(--fg-muted)'
+      }
+    }), /*#__PURE__*/React.createElement("span", {
+      className: "flex-1 truncate"
+    }, sub.label))))), document.body));
+  }
+  return /*#__PURE__*/React.createElement("button", {
+    onClick: () => {
+      item.onClick();
+      onClose();
+    },
+    className: "w-full flex items-center gap-2.5 px-2.5 h-8 hover-bg-hover transition-colors text-[13px] text-left",
+    style: {
+      color: item.danger ? 'var(--priority-urgent)' : 'var(--fg)'
+    }
+  }, Icon && /*#__PURE__*/React.createElement(Icon, {
+    size: 13,
+    className: "shrink-0",
+    style: {
+      color: item.danger ? 'var(--priority-urgent)' : 'var(--fg-muted)'
+    }
+  }), /*#__PURE__*/React.createElement("span", {
+    className: "flex-1 truncate"
+  }, item.label), item.shortcut && /*#__PURE__*/React.createElement("span", {
+    className: "text-[11px]",
+    style: {
+      color: 'var(--fg-subtle)'
+    }
+  }, item.shortcut));
+};
+
+/* Context menu — opens at right-click position, portal-rendered.
+   Pass `items` as array of { icon, label, onClick, danger?, divider?, submenu? }.
+   Rendered via children element (auto-receives onContextMenu). */
+const ContextMenu = ({
+  items,
+  children,
+  disabled = false
+}) => {
+  const [open, setOpen] = useState(false);
+  const [pos, setPos] = useState({
+    top: 0,
+    left: 0
+  });
+  const menuRef = useRef(null);
+  const handleContextMenu = e => {
+    if (disabled) return;
+    e.preventDefault();
+    e.stopPropagation();
+    const margin = 8;
+    const menuW = 200;
+    const menuH = items.filter(i => !i.divider).length * 32 + items.filter(i => i.divider).length * 9 + 8;
+    let left = e.clientX;
+    let top = e.clientY;
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    if (left + menuW > vw - margin) left = vw - menuW - margin;
+    if (top + menuH > vh - margin) top = vh - menuH - margin;
+    if (left < margin) left = margin;
+    if (top < margin) top = margin;
+    setPos({
+      top,
+      left
+    });
+    setOpen(true);
+  };
+  useEffect(() => {
+    if (!open) return;
+    const onDown = e => {
+      if (menuRef.current?.contains(e.target)) return;
+      /* Don't close if click is inside a submenu portal sibling */
+      const inSubmenu = e.target.closest('[data-context-submenu]');
+      if (inSubmenu) return;
+      setOpen(false);
+    };
+    const onKey = e => {
+      if (e.key === 'Escape') setOpen(false);
+    };
+    const onScroll = () => setOpen(false);
+    document.addEventListener('mousedown', onDown);
+    document.addEventListener('keydown', onKey);
+    window.addEventListener('scroll', onScroll, true);
+    return () => {
+      document.removeEventListener('mousedown', onDown);
+      document.removeEventListener('keydown', onKey);
+      window.removeEventListener('scroll', onScroll, true);
+    };
+  }, [open]);
+  return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.cloneElement(children, {
+    onContextMenu: handleContextMenu
+  }), open && /*#__PURE__*/createPortal(/*#__PURE__*/React.createElement(AnimatePresence, null, /*#__PURE__*/React.createElement(motion.div, {
+    ref: menuRef,
+    initial: {
+      opacity: 0,
+      scale: 0.97,
+      y: -2
+    },
+    animate: {
+      opacity: 1,
+      scale: 1,
+      y: 0
+    },
+    exit: {
+      opacity: 0,
+      scale: 0.97
+    },
+    transition: {
+      duration: 0.1,
+      ease: 'easeOut'
+    },
+    className: "fixed z-[200] rounded-lg shadow-modal border overflow-hidden py-1",
+    style: {
+      top: pos.top,
+      left: pos.left,
+      minWidth: 200,
+      background: 'var(--bg-elevated)',
+      borderColor: 'var(--border)'
+    }
+  }, items.map((item, i) => {
+    if (item.divider) return /*#__PURE__*/React.createElement("div", {
+      key: `div-${i}`,
+      className: "h-px my-1",
+      style: {
+        background: 'var(--border)'
+      }
+    });
+    return /*#__PURE__*/React.createElement(ContextMenuItem, {
+      key: i,
+      item: item,
+      onClose: () => setOpen(false)
+    });
+  }))), document.body));
+};
+
+/* Inline editable text — used for renaming spaces/folders/lists */
+const InlineEdit = ({
+  value,
+  onCommit,
+  onCancel,
+  placeholder,
+  className = ''
+}) => {
+  const [draft, setDraft] = useState(value);
+  const ref = useRef(null);
+  useEffect(() => {
+    ref.current?.focus();
+    ref.current?.select();
+  }, []);
+  const commit = () => {
+    const trimmed = draft.trim();
+    if (trimmed) onCommit(trimmed);else onCancel?.();
+  };
+  return /*#__PURE__*/React.createElement("input", {
+    ref: ref,
+    value: draft,
+    onChange: e => setDraft(e.target.value),
+    onBlur: commit,
+    onClick: e => e.stopPropagation(),
+    onKeyDown: e => {
+      e.stopPropagation();
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        commit();
+      } else if (e.key === 'Escape') {
+        e.preventDefault();
+        onCancel?.();
+      }
+    },
+    placeholder: placeholder,
+    className: `bg-transparent outline-none border rounded px-1 py-0 ${className}`,
+    style: {
+      borderColor: 'var(--accent-border)',
+      background: 'var(--bg-elevated)'
+    }
+  });
+};
+
+/* ════════════════════════════════════════════════════════════════════════════
+   SIDEBAR — workspace, search, primary nav, spaces tree, theme picker
+   ════════════════════════════════════════════════════════════════════════════ */
+
+const SidebarItem = ({
+  active,
+  onClick,
+  icon: Icon,
+  label,
+  accessory,
+  indent = 0,
+  dot,
+  badge,
+  hoverActions
+}) => /*#__PURE__*/React.createElement("div", {
+  className: "group relative"
+}, /*#__PURE__*/React.createElement("button", {
+  onClick: onClick,
+  className: "w-full flex items-center gap-2 h-7 rounded-md transition-colors text-[13px] focus-ring",
+  style: {
+    paddingLeft: 8 + indent * 14,
+    paddingRight: 8,
+    background: active ? 'var(--bg-hover)' : 'transparent',
+    color: active ? 'var(--fg)' : 'var(--fg-muted)'
+  },
+  onMouseEnter: e => !active && (e.currentTarget.style.background = 'var(--bg-hover)', e.currentTarget.style.color = 'var(--fg)'),
+  onMouseLeave: e => !active && (e.currentTarget.style.background = 'transparent', e.currentTarget.style.color = 'var(--fg-muted)')
+}, Icon && /*#__PURE__*/React.createElement(Icon, {
+  size: 14,
+  strokeWidth: 1.8,
+  className: "shrink-0"
+}), dot && /*#__PURE__*/React.createElement("span", {
+  className: "w-2 h-2 rounded-sm shrink-0",
+  style: {
+    background: dot
+  }
+}), /*#__PURE__*/React.createElement("span", {
+  className: "flex-1 text-left truncate"
+}, label), badge !== undefined && badge !== null && badge > 0 && /*#__PURE__*/React.createElement("span", {
+  className: "text-[11px] tabular-nums shrink-0",
+  style: {
+    color: 'var(--fg-subtle)'
+  }
+}, badge), accessory), hoverActions && /*#__PURE__*/React.createElement("div", {
+  className: "absolute right-1 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-0.5"
+}, hoverActions));
+const SectionHeader = ({
+  label,
+  action,
+  expanded,
+  onToggle
+}) => /*#__PURE__*/React.createElement("div", {
+  className: "flex items-center justify-between px-2 h-7 group"
+}, /*#__PURE__*/React.createElement("button", {
+  onClick: onToggle,
+  className: "flex items-center gap-1 text-subtle hover:text-fg transition-colors"
+}, onToggle && /*#__PURE__*/React.createElement(ChevronRight, {
+  size: 11,
+  strokeWidth: 2.5,
+  style: {
+    transform: expanded ? 'rotate(90deg)' : 'none',
+    transition: 'transform 150ms'
+  }
+}), /*#__PURE__*/React.createElement("span", {
+  className: "text-[10.5px] font-semibold tracking-wider uppercase"
+}, label)), action && /*#__PURE__*/React.createElement("span", {
+  className: "opacity-0 group-hover:opacity-100 transition-opacity"
+}, action));
+const HoverIconButton = ({
+  onClick,
+  icon: Icon,
+  title
+}) => /*#__PURE__*/React.createElement("button", {
+  onClick: onClick,
+  "aria-label": title,
+  className: "w-5 h-5 flex items-center justify-center rounded text-subtle hover:text-fg transition-colors",
+  style: {
+    background: 'transparent'
+  },
+  onMouseEnter: e => e.currentTarget.style.background = 'var(--bg-elevated)',
+  onMouseLeave: e => e.currentTarget.style.background = 'transparent'
+}, /*#__PURE__*/React.createElement(Icon, {
+  size: 12,
+  strokeWidth: 1.8
+}));
+
+/* "Add child" picker — for adding List | Folder | Sprint into a space or folder */
+const AddNodeMenu = ({
+  onPick
+}) => /*#__PURE__*/React.createElement(Popover, {
+  align: "start",
+  width: 200,
+  trigger: /*#__PURE__*/React.createElement("span", null, /*#__PURE__*/React.createElement(HoverIconButton, {
+    icon: Plus,
+    title: "Add",
+    onClick: () => {}
+  }))
+}, ({
+  close
+}) => /*#__PURE__*/React.createElement("div", {
+  className: "py-1"
+}, [{
+  type: 'list',
+  label: 'List',
+  icon: ListIcon,
+  desc: 'Holds tasks'
+}, {
+  type: 'folder',
+  label: 'Folder',
+  icon: Folder,
+  desc: 'Groups lists'
+}, {
+  type: 'sprint',
+  label: 'Sprint folder',
+  icon: Zap,
+  desc: 'Time-boxed'
+}].map(opt => /*#__PURE__*/React.createElement("button", {
+  key: opt.type,
+  onClick: () => {
+    onPick(opt.type);
+    close();
+  },
+  className: "w-full flex items-center gap-2.5 px-2.5 h-9 hover-bg-hover transition-colors text-left"
+}, /*#__PURE__*/React.createElement(opt.icon, {
+  size: 14,
+  className: "text-muted shrink-0",
+  strokeWidth: 1.8
+}), /*#__PURE__*/React.createElement("span", {
+  className: "flex-1"
+}, /*#__PURE__*/React.createElement("span", {
+  className: "text-[13px] block leading-tight"
+}, opt.label), /*#__PURE__*/React.createElement("span", {
+  className: "text-[11px] text-subtle leading-tight"
+}, opt.desc))))));
+
+/* Node menu — rename / move / delete actions */
+/* Inner content of NodeMenu — separate component so it remounts each open,
+   resetting showMove state. */
+const NodeMenuContent = ({
+  close,
+  onRename,
+  onDelete,
+  onMove,
+  nodeId
+}) => {
+  const [showMove, setShowMove] = useState(false);
+  if (showMove && onMove) {
+    return /*#__PURE__*/React.createElement(MoveToList, {
+      nodeId: nodeId,
+      onMove: (spaceId, parentId) => {
+        onMove(spaceId, parentId);
+        close();
+      },
+      onBack: () => setShowMove(false)
+    });
+  }
+  return /*#__PURE__*/React.createElement("div", {
+    className: "py-1"
+  }, /*#__PURE__*/React.createElement("button", {
+    onClick: () => {
+      onRename();
+      close();
+    },
+    className: "w-full flex items-center gap-2 px-2.5 h-8 hover-bg-hover transition-colors text-[13px] text-left"
+  }, /*#__PURE__*/React.createElement(Edit3, {
+    size: 13,
+    className: "text-muted"
+  }), " Rename"), onMove && /*#__PURE__*/React.createElement("button", {
+    onClick: () => setShowMove(true),
+    className: "w-full flex items-center gap-2 px-2.5 h-8 hover-bg-hover transition-colors text-[13px] text-left"
+  }, /*#__PURE__*/React.createElement(FolderPlus, {
+    size: 13,
+    className: "text-muted"
+  }), /*#__PURE__*/React.createElement("span", {
+    className: "flex-1"
+  }, "Move to\u2026"), /*#__PURE__*/React.createElement(ChevronRight, {
+    size: 12,
+    className: "text-subtle"
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "h-px my-1",
+    style: {
+      background: 'var(--border)'
+    }
+  }), /*#__PURE__*/React.createElement("button", {
+    onClick: () => {
+      onDelete();
+      close();
+    },
+    className: "w-full flex items-center gap-2 px-2.5 h-8 hover-bg-hover transition-colors text-[13px] text-left",
+    style: {
+      color: 'var(--priority-urgent)'
+    }
+  }, /*#__PURE__*/React.createElement(Trash2, {
+    size: 13
+  }), " Delete"));
+};
+const NodeMenu = ({
+  onRename,
+  onDelete,
+  onMove,
+  nodeId
+}) => /*#__PURE__*/React.createElement(Popover, {
+  align: "end",
+  width: 180,
+  trigger: /*#__PURE__*/React.createElement("span", null, /*#__PURE__*/React.createElement(HoverIconButton, {
+    icon: MoreHorizontal,
+    title: "More",
+    onClick: () => {}
+  }))
+}, ({
+  close
+}) => /*#__PURE__*/React.createElement(NodeMenuContent, {
+  close: close,
+  onRename: onRename,
+  onDelete: onDelete,
+  onMove: onMove,
+  nodeId: nodeId
+}));
+
+/* Move-to picker — flat list of valid drop targets */
+const MoveToList = ({
+  nodeId,
+  onMove,
+  onBack
+}) => {
+  const spaces = useWorkspaceStore(s => s.spaces);
+  const targets = useMemo(() => {
+    const out = [];
+    let movingNode = null;
+    for (const sp of spaces) {
+      const r = findNodeAndParent(sp.nodes, nodeId);
+      if (r) {
+        movingNode = r.node;
+        break;
+      }
+    }
+    const disallowed = new Set();
+    if (movingNode) {
+      disallowed.add(movingNode.id);
+      const collect = n => {
+        if (n.children) n.children.forEach(c => {
+          disallowed.add(c.id);
+          collect(c);
+        });
+      };
+      collect(movingNode);
+    }
+    spaces.forEach(sp => {
+      out.push({
+        kind: 'space',
+        spaceId: sp.id,
+        parentId: null,
+        label: sp.name,
+        indent: 0,
+        color: sp.color
+      });
+      const walk = (nodes, indent) => {
+        nodes.forEach(n => {
+          if (n.type === 'list' || disallowed.has(n.id)) return;
+          out.push({
+            kind: n.type,
+            spaceId: sp.id,
+            parentId: n.id,
+            label: n.name,
+            indent
+          });
+          if (n.children) walk(n.children, indent + 1);
+        });
+      };
+      walk(sp.nodes, 1);
+    });
+    return out;
+  }, [spaces, nodeId]);
+  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("button", {
+    onClick: onBack,
+    className: "w-full flex items-center gap-2 px-2.5 h-8 hover-bg-hover transition-colors text-[12.5px] text-left border-b",
+    style: {
+      borderColor: 'var(--border)',
+      color: 'var(--fg-muted)'
+    }
+  }, /*#__PURE__*/React.createElement(ChevronLeft, {
+    size: 12
+  }), " Move to\u2026"), /*#__PURE__*/React.createElement("div", {
+    className: "py-1 max-h-[280px] overflow-y-auto"
+  }, targets.length === 0 ? /*#__PURE__*/React.createElement("div", {
+    className: "px-3 py-4 text-[12px] text-subtle text-center italic"
+  }, "No valid destinations") : targets.map((t, i) => /*#__PURE__*/React.createElement("button", {
+    key: `${t.spaceId}-${t.parentId || 'root'}-${i}`,
+    onClick: () => onMove(t.spaceId, t.parentId),
+    className: "w-full flex items-center gap-2 h-8 hover-bg-hover transition-colors text-[12.5px] text-left",
+    style: {
+      paddingLeft: 10 + t.indent * 12,
+      paddingRight: 10
+    }
+  }, t.kind === 'space' ? /*#__PURE__*/React.createElement("span", {
+    className: "w-3 h-3 rounded-sm shrink-0",
+    style: {
+      background: t.color
+    }
+  }) : t.kind === 'sprint' ? /*#__PURE__*/React.createElement(Zap, {
+    size: 11,
+    className: "shrink-0",
+    style: {
+      color: 'var(--accent)'
+    }
+  }) : /*#__PURE__*/React.createElement(Folder, {
+    size: 11,
+    className: "shrink-0 text-muted"
+  }), /*#__PURE__*/React.createElement("span", {
+    className: "flex-1 truncate"
+  }, t.label)))));
+};
+
+/* Recursive tree node component */
+const TreeNode = ({
+  node,
+  spaceId,
+  indent,
+  taskCounts,
+  route,
+  onNavigate,
+  renaming,
+  setRenaming
+}) => {
+  const ws = useWorkspaceStore();
+  const expanded = useUIStore(s => s.expanded[node.id]);
+  const toggleExpand = useUIStore(s => s.toggleExpand);
+  const setExpanded = useUIStore(s => s.setExpanded);
+  const isList = node.type === 'list';
+  const isSprint = node.type === 'sprint';
+  const isFolder = node.type === 'folder';
+  const path = isList ? `/list/${node.id}` : null;
+  const active = path && route === path;
+  const handleAddChild = childType => {
+    const child = childType === 'list' ? {
+      id: newId('l'),
+      type: 'list',
+      name: 'New list',
+      taskIds: []
+    } : childType === 'folder' ? {
+      id: newId('f'),
+      type: 'folder',
+      name: 'New folder',
+      children: []
+    } : {
+      id: newId('sf'),
+      type: 'sprint',
+      name: 'New sprint',
+      startDate: dayOffset(0),
+      endDate: dayOffset(14),
+      children: []
+    };
+    ws.addNode(spaceId, node.id, child);
+    setExpanded(node.id, true);
+    setRenaming(child.id);
+  };
+  const Icon = isList ? ListIcon : isSprint ? Zap : expanded ? FolderOpen : Folder;
+
+  /* Sprint metadata */
+  let sprintStatus = null;
+  if (isSprint && node.startDate && node.endDate) {
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
+    const start = new Date(node.startDate);
+    start.setHours(0, 0, 0, 0);
+    const end = new Date(node.endDate);
+    end.setHours(0, 0, 0, 0);
+    const daysLeft = Math.round((end - now) / 86400000);
+    if (now < start) sprintStatus = {
+      label: `in ${Math.round((start - now) / 86400000)}d`,
+      tone: 'upcoming'
+    };else if (now > end) sprintStatus = {
+      label: 'ended',
+      tone: 'ended'
+    };else sprintStatus = {
+      label: `${daysLeft}d left`,
+      tone: 'active'
+    };
+  }
+  return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+    className: "group relative"
+  }, /*#__PURE__*/React.createElement("button", {
+    onClick: () => {
+      if (isList) onNavigate(path);else toggleExpand(node.id);
+    },
+    className: "w-full flex items-center gap-1.5 h-7 rounded-md transition-colors text-[13px] focus-ring",
+    style: {
+      paddingLeft: 8 + indent * 14,
+      paddingRight: 60,
+      background: active ? 'var(--bg-hover)' : 'transparent',
+      color: active ? 'var(--fg)' : 'var(--fg-muted)'
+    },
+    onMouseEnter: e => !active && (e.currentTarget.style.background = 'var(--bg-hover)', e.currentTarget.style.color = 'var(--fg)'),
+    onMouseLeave: e => !active && (e.currentTarget.style.background = 'transparent', e.currentTarget.style.color = 'var(--fg-muted)')
+  }, !isList ? /*#__PURE__*/React.createElement(ChevronRight, {
+    size: 11,
+    strokeWidth: 2.5,
+    className: "shrink-0",
+    style: {
+      transform: expanded ? 'rotate(90deg)' : 'none',
+      transition: 'transform 150ms',
+      color: 'var(--fg-subtle)'
+    }
+  }) : /*#__PURE__*/React.createElement("span", {
+    className: "w-[11px] shrink-0"
+  }), isSprint ? /*#__PURE__*/React.createElement("span", {
+    className: "w-[14px] h-[14px] rounded flex items-center justify-center shrink-0",
+    style: {
+      background: sprintStatus?.tone === 'active' ? 'var(--accent)' : 'var(--bg-muted)',
+      color: sprintStatus?.tone === 'active' ? 'var(--bg-elevated)' : 'var(--accent)'
+    }
+  }, /*#__PURE__*/React.createElement(Zap, {
+    size: 9,
+    strokeWidth: 2.5,
+    fill: sprintStatus?.tone === 'active' ? 'currentColor' : 'none'
+  })) : /*#__PURE__*/React.createElement(Icon, {
+    size: 13,
+    strokeWidth: 1.8,
+    className: "shrink-0",
+    style: {
+      color: 'var(--fg-muted)'
+    }
+  }), renaming === node.id ? /*#__PURE__*/React.createElement(InlineEdit, {
+    value: node.name,
+    onCommit: v => {
+      ws.updateNode(spaceId, node.id, {
+        name: v
+      });
+      setRenaming(null);
+    },
+    onCancel: () => setRenaming(null),
+    className: "flex-1 text-[13px] min-w-0"
+  }) : /*#__PURE__*/React.createElement("span", {
+    className: "flex-1 text-left truncate",
+    style: {
+      fontWeight: isSprint ? 500 : 400
+    }
+  }, node.name), isSprint && sprintStatus && /*#__PURE__*/React.createElement("span", {
+    className: "text-[10px] font-medium tabular-nums px-1.5 h-[15px] rounded-sm flex items-center shrink-0",
+    style: {
+      background: sprintStatus.tone === 'active' ? 'var(--accent-soft)' : 'var(--bg-muted)',
+      color: sprintStatus.tone === 'active' ? 'var(--accent)' : 'var(--fg-subtle)'
+    }
+  }, sprintStatus.label)), /*#__PURE__*/React.createElement("div", {
+    className: "absolute right-1 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-0.5"
+  }, !isList && /*#__PURE__*/React.createElement(AddNodeMenu, {
+    onPick: handleAddChild
+  }), /*#__PURE__*/React.createElement(NodeMenu, {
+    nodeId: node.id,
+    onRename: () => setRenaming(node.id),
+    onDelete: () => ws.deleteNode(spaceId, node.id),
+    onMove: (targetSpaceId, targetParentId) => ws.moveNode(node.id, targetSpaceId, targetParentId)
+  }))), /*#__PURE__*/React.createElement(AnimatePresence, {
+    initial: false
+  }, !isList && expanded && node.children?.length > 0 && /*#__PURE__*/React.createElement(motion.div, {
+    initial: {
+      height: 0,
+      opacity: 0
+    },
+    animate: {
+      height: 'auto',
+      opacity: 1
+    },
+    exit: {
+      height: 0,
+      opacity: 0
+    },
+    transition: {
+      duration: 0.15,
+      ease: 'easeOut'
+    },
+    style: {
+      overflow: 'hidden'
+    }
+  }, node.children.map(child => /*#__PURE__*/React.createElement(TreeNode, {
+    key: child.id,
+    node: child,
+    spaceId: spaceId,
+    indent: indent + 1,
+    taskCounts: taskCounts,
+    route: route,
+    onNavigate: onNavigate,
+    renaming: renaming,
+    setRenaming: setRenaming
+  })))));
+};
+const SpaceBlock = ({
+  space,
+  taskCounts,
+  route,
+  onNavigate,
+  renaming,
+  setRenaming
+}) => {
+  const ws = useWorkspaceStore();
+  const expanded = useUIStore(s => s.expanded[space.id]) ?? true;
+  const toggleExpand = useUIStore(s => s.toggleExpand);
+  const setExpanded = useUIStore(s => s.setExpanded);
+  const handleAddChild = childType => {
+    const child = childType === 'list' ? {
+      id: newId('l'),
+      type: 'list',
+      name: 'New list',
+      taskIds: []
+    } : childType === 'folder' ? {
+      id: newId('f'),
+      type: 'folder',
+      name: 'New folder',
+      children: []
+    } : {
+      id: newId('sf'),
+      type: 'sprint',
+      name: 'New sprint',
+      startDate: dayOffset(0),
+      endDate: dayOffset(14),
+      children: []
+    };
+    ws.addNode(space.id, null, child);
+    setExpanded(space.id, true);
+    setRenaming(child.id);
+  };
+  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    className: "group relative"
+  }, /*#__PURE__*/React.createElement("button", {
+    onClick: () => toggleExpand(space.id),
+    className: "w-full flex items-center gap-1.5 h-7 px-2 pr-16 rounded-md transition-colors hover-bg-hover"
+  }, /*#__PURE__*/React.createElement(ChevronRight, {
+    size: 11,
+    strokeWidth: 2.5,
+    style: {
+      transform: expanded ? 'rotate(90deg)' : 'none',
+      transition: 'transform 150ms',
+      color: 'var(--fg-subtle)'
+    }
+  }), /*#__PURE__*/React.createElement("span", {
+    className: "w-4 h-4 rounded flex items-center justify-center text-[10px] font-semibold shrink-0",
+    style: {
+      background: `${space.color}26`,
+      color: space.color
+    }
+  }, space.name[0]), renaming === space.id ? /*#__PURE__*/React.createElement(InlineEdit, {
+    value: space.name,
+    onCommit: v => {
+      ws.updateSpace(space.id, {
+        name: v
+      });
+      setRenaming(null);
+    },
+    onCancel: () => setRenaming(null),
+    className: "flex-1 text-[12.5px] font-medium min-w-0"
+  }) : /*#__PURE__*/React.createElement("span", {
+    className: "flex-1 text-left text-[12.5px] font-medium truncate",
+    style: {
+      color: 'var(--fg)'
+    }
+  }, space.name)), /*#__PURE__*/React.createElement("div", {
+    className: "absolute right-1 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-0.5"
+  }, /*#__PURE__*/React.createElement(AddNodeMenu, {
+    onPick: handleAddChild
+  }), /*#__PURE__*/React.createElement(NodeMenu, {
+    onRename: () => setRenaming(space.id),
+    onDelete: () => ws.deleteSpace(space.id)
+  }))), /*#__PURE__*/React.createElement(AnimatePresence, {
+    initial: false
+  }, expanded && /*#__PURE__*/React.createElement(motion.div, {
+    initial: {
+      height: 0,
+      opacity: 0
+    },
+    animate: {
+      height: 'auto',
+      opacity: 1
+    },
+    exit: {
+      height: 0,
+      opacity: 0
+    },
+    transition: {
+      duration: 0.15,
+      ease: 'easeOut'
+    },
+    style: {
+      overflow: 'hidden'
+    }
+  }, space.nodes.length === 0 ? /*#__PURE__*/React.createElement("div", {
+    className: "text-[11.5px] py-1 italic",
+    style: {
+      paddingLeft: 30,
+      color: 'var(--fg-subtle)'
+    }
+  }, "Empty \u2014 add a list or folder") : space.nodes.map(node => /*#__PURE__*/React.createElement(TreeNode, {
+    key: node.id,
+    node: node,
+    spaceId: space.id,
+    indent: 1,
+    taskCounts: taskCounts,
+    route: route,
+    onNavigate: onNavigate,
+    renaming: renaming,
+    setRenaming: setRenaming
+  })))));
+};
+
+/* Profile menu — full bottom-bar entry that opens user/account menu w/ theme picker inside */
+/* Inner content of ProfileMenu — kept as separate component so it remounts
+   each time the popover opens, resetting its local showTheme state. */
+const ProfileMenuContent = ({
+  close
+}) => {
+  const themeId = useUIStore(s => s.themeId);
+  const setThemeId = useUIStore(s => s.setThemeId);
+  const trashCount = useWorkspaceStore(s => s.trash.length);
+  const {
+    navigate
+  } = useRoute();
+  const [showTheme, setShowTheme] = useState(false);
+  const currentTheme = THEMES.find(t => t.id === themeId) || THEMES[0];
+  return /*#__PURE__*/React.createElement("div", {
+    className: "py-1"
+  }, showTheme ? /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("button", {
+    onClick: () => setShowTheme(false),
+    className: "w-full flex items-center gap-2 px-2.5 h-8 hover-bg-hover transition-colors text-[12.5px] text-left border-b",
+    style: {
+      borderColor: 'var(--border)',
+      color: 'var(--fg-muted)'
+    }
+  }, /*#__PURE__*/React.createElement(ChevronLeft, {
+    size: 12
+  }), " Theme"), /*#__PURE__*/React.createElement("div", {
+    className: "py-1"
+  }, THEMES.map(t => /*#__PURE__*/React.createElement("button", {
+    key: t.id,
+    onClick: () => {
+      setThemeId(t.id);
+    },
+    className: "w-full flex items-center gap-2.5 px-2.5 h-9 hover-bg-hover transition-colors text-[13px] text-left"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex rounded overflow-hidden border shrink-0",
+    style: {
+      borderColor: 'var(--border)'
+    }
+  }, t.preview.map((c, i) => /*#__PURE__*/React.createElement("span", {
+    key: i,
+    style: {
+      width: 9,
+      height: 14,
+      background: c,
+      display: 'block'
+    }
+  }))), /*#__PURE__*/React.createElement("span", {
+    className: "flex-1"
+  }, t.label), themeId === t.id && /*#__PURE__*/React.createElement(Check, {
+    size: 13,
+    className: "text-accent"
+  }))))) : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("button", {
+    onClick: () => setShowTheme(true),
+    className: "w-full flex items-center gap-2.5 px-2.5 h-9 hover-bg-hover transition-colors text-[13px] text-left"
+  }, currentTheme.mode === 'dark' ? /*#__PURE__*/React.createElement(Moon, {
+    size: 13,
+    className: "text-muted shrink-0"
+  }) : /*#__PURE__*/React.createElement(Sun, {
+    size: 13,
+    className: "text-muted shrink-0"
+  }), /*#__PURE__*/React.createElement("span", {
+    className: "flex-1"
+  }, "Change theme"), /*#__PURE__*/React.createElement("span", {
+    className: "text-[11px]",
+    style: {
+      color: 'var(--fg-subtle)'
+    }
+  }, currentTheme.label), /*#__PURE__*/React.createElement(ChevronRight, {
+    size: 12,
+    className: "text-subtle"
+  })), /*#__PURE__*/React.createElement("button", {
+    onClick: () => {
+      navigate('/trash');
+      close();
+    },
+    className: "w-full flex items-center gap-2.5 px-2.5 h-9 hover-bg-hover transition-colors text-[13px] text-left"
+  }, /*#__PURE__*/React.createElement(Trash2, {
+    size: 13,
+    className: "text-muted shrink-0"
+  }), /*#__PURE__*/React.createElement("span", {
+    className: "flex-1"
+  }, "Trash"), trashCount > 0 && /*#__PURE__*/React.createElement("span", {
+    className: "text-[11px] mono tabular-nums",
+    style: {
+      color: 'var(--fg-subtle)'
+    }
+  }, trashCount)), /*#__PURE__*/React.createElement("div", {
+    className: "h-px my-1",
+    style: {
+      background: 'var(--border)'
+    }
+  }), /*#__PURE__*/React.createElement("button", {
+    onClick: close,
+    className: "w-full flex items-center gap-2.5 px-2.5 h-9 hover-bg-hover transition-colors text-[13px] text-left",
+    style: {
+      color: 'var(--priority-urgent)'
+    }
+  }, /*#__PURE__*/React.createElement(X, {
+    size: 13,
+    className: "shrink-0"
+  }), /*#__PURE__*/React.createElement("span", {
+    className: "flex-1"
+  }, "Log out"))));
+};
+const ProfileMenu = () => {
+  return /*#__PURE__*/React.createElement(Popover, {
+    align: "start",
+    side: "top",
+    width: 220,
+    trigger: /*#__PURE__*/React.createElement("button", {
+      className: "rounded-full hover:ring-2 transition-all focus-ring",
+      style: {
+        '--tw-ring-color': 'var(--border-strong)'
+      },
+      title: "Account"
+    }, /*#__PURE__*/React.createElement(Avatar, {
+      user: MEMBERS[5],
+      size: "md"
+    }))
+  }, ({
+    close
+  }) => /*#__PURE__*/React.createElement(ProfileMenuContent, {
+    close: close
+  }));
+};
+
+/* Personal list row — context-menu wrapped */
+const PersonalListRow = ({
+  list,
+  active,
+  onNavigate,
+  renaming,
+  setRenaming
+}) => {
+  const ws = useWorkspaceStore();
+  return /*#__PURE__*/React.createElement("div", {
+    className: "group relative"
+  }, /*#__PURE__*/React.createElement("button", {
+    onClick: onNavigate,
+    className: "w-full flex items-center gap-1.5 h-7 rounded-md transition-colors text-[13px]",
+    style: {
+      paddingLeft: 22,
+      paddingRight: 60,
+      background: active ? 'var(--bg-hover)' : 'transparent',
+      color: active ? 'var(--fg)' : 'var(--fg-muted)'
+    },
+    onMouseEnter: e => !active && (e.currentTarget.style.background = 'var(--bg-hover)', e.currentTarget.style.color = 'var(--fg)'),
+    onMouseLeave: e => !active && (e.currentTarget.style.background = 'transparent', e.currentTarget.style.color = 'var(--fg-muted)')
+  }, /*#__PURE__*/React.createElement(ListIcon, {
+    size: 12,
+    strokeWidth: 1.8,
+    className: "shrink-0",
+    style: {
+      color: 'var(--fg-muted)'
+    }
+  }), renaming === list.id ? /*#__PURE__*/React.createElement(InlineEdit, {
+    value: list.name,
+    onCommit: v => {
+      ws.updatePersonalList(list.id, {
+        name: v
+      });
+      setRenaming(null);
+    },
+    onCancel: () => setRenaming(null),
+    className: "flex-1 text-[13px] min-w-0"
+  }) : /*#__PURE__*/React.createElement("span", {
+    className: "flex-1 text-left truncate"
+  }, list.name)), /*#__PURE__*/React.createElement("div", {
+    className: "absolute right-1 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-0.5"
+  }, /*#__PURE__*/React.createElement(NodeMenu, {
+    onRename: () => setRenaming(list.id),
+    onDelete: () => ws.deletePersonalList(list.id)
+  })));
+};
+const Sidebar = () => {
+  const {
+    route,
+    navigate
+  } = useRoute();
+  const ws = useWorkspaceStore();
+  const tasks = useTaskStore(s => s.tasks);
+  const collapsed = useUIStore(s => s.sidebarCollapsed);
+  const sidebarWidth = useUIStore(s => s.sidebarWidth);
+  const setSidebarWidth = useUIStore(s => s.setSidebarWidth);
+  const myTasksExpanded = useUIStore(s => s.expanded['__my-tasks']) ?? true;
+  const personalExpanded = useUIStore(s => s.expanded['__personal']) ?? true;
+  const spacesExpanded = useUIStore(s => s.expanded['__spaces']) ?? true;
+  const toggleExpand = useUIStore(s => s.toggleExpand);
+  const setExpanded = useUIStore(s => s.setExpanded);
+  const [search, setSearch] = useState('');
+  const [renaming, setRenaming] = useState(null);
+  const [resizing, setResizing] = useState(false);
+
+  /* Resize drag handler */
+  useEffect(() => {
+    if (!resizing) return;
+    const onMove = e => setSidebarWidth(e.clientX);
+    const onUp = () => setResizing(false);
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onUp);
+    return () => {
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+      window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('mouseup', onUp);
+    };
+  }, [resizing, setSidebarWidth]);
+
+  /* Counts */
+  const taskCounts = useMemo(() => {
+    const counts = {};
+    tasks.forEach(t => {
+      if (t.status === 'done') return;
+      counts[t.listId] = (counts[t.listId] || 0) + 1;
+    });
+    return counts;
+  }, [tasks]);
+  const myAssigned = tasks.filter(t => t.assigneeId === 'u6' && t.status !== 'done').length;
+  const myToday = tasks.filter(t => {
+    if (t.assigneeId !== 'u6' || t.status === 'done' || !t.due) return false;
+    const d = new Date(t.due);
+    d.setHours(0, 0, 0, 0);
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
+    return d <= now;
+  }).length;
+  const mentionCount = tasks.filter(t => (t.comments || []).some(c => (c.mentions || []).includes('u6'))).length;
+
+  /* Search results */
+  const searchResults = useMemo(() => {
+    if (!search.trim()) return null;
+    const q = search.toLowerCase();
+    return tasks.filter(t => t.title.toLowerCase().includes(q)).slice(0, 8);
+  }, [search, tasks]);
+  const handleNewSpace = () => {
+    const id = newId('sp');
+    useWorkspaceStore.setState(s => ({
+      spaces: [...s.spaces, {
+        id,
+        name: 'New space',
+        icon: '◉',
+        color: '#6b6760',
+        nodes: []
+      }]
+    }));
+    setRenaming(id);
+    setExpanded('__spaces', true);
+  };
+  const handleNewPersonalList = () => {
+    const id = newId('pl');
+    useWorkspaceStore.setState(s => ({
+      personalLists: [...s.personalLists, {
+        id,
+        type: 'list',
+        name: 'New list',
+        taskIds: []
+      }]
+    }));
+    setRenaming(id);
+    setExpanded('__personal', true);
+  };
+  if (collapsed) return null;
+  return /*#__PURE__*/React.createElement("aside", {
+    className: "border-r flex flex-col shrink-0 relative",
+    style: {
+      width: sidebarWidth,
+      background: 'var(--bg)',
+      borderColor: 'var(--border)'
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "px-3 pt-3 pb-2 flex items-center gap-2"
+  }, /*#__PURE__*/React.createElement("button", {
+    className: "flex items-center gap-2 cursor-pointer hover-bg-hover px-1.5 py-1 -ml-1.5 rounded-md transition-colors flex-1 min-w-0"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "w-5 h-5 rounded flex items-center justify-center text-[11px] font-semibold shrink-0",
+    style: {
+      background: 'var(--fg)',
+      color: 'var(--bg)'
+    }
+  }, ws.workspaceName[0]), /*#__PURE__*/React.createElement("span", {
+    className: "text-[13px] font-semibold truncate"
+  }, ws.workspaceName), /*#__PURE__*/React.createElement(ChevronDown, {
+    size: 11,
+    className: "text-subtle shrink-0"
+  })), /*#__PURE__*/React.createElement(Tip, {
+    label: "Notifications"
+  }, /*#__PURE__*/React.createElement("button", {
+    className: "p-1 rounded text-subtle hover:text-fg hover-bg-hover transition-colors focus-ring relative"
+  }, /*#__PURE__*/React.createElement(Bell, {
+    size: 14,
+    strokeWidth: 1.8
+  }), mentionCount > 0 && /*#__PURE__*/React.createElement("span", {
+    className: "absolute top-1 right-1 w-1.5 h-1.5 rounded-full",
+    style: {
+      background: 'var(--accent)'
+    }
+  })))), /*#__PURE__*/React.createElement("div", {
+    className: "px-3 pb-2"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center gap-2 px-2 h-7 rounded-md transition-colors",
+    style: {
+      background: 'var(--bg-muted)'
+    }
+  }, /*#__PURE__*/React.createElement(Search, {
+    size: 13,
+    className: "text-subtle shrink-0",
+    strokeWidth: 1.8
+  }), /*#__PURE__*/React.createElement("input", {
+    value: search,
+    onChange: e => setSearch(e.target.value),
+    placeholder: "Search tasks\u2026",
+    className: "flex-1 bg-transparent outline-none text-[12.5px] placeholder:text-subtle min-w-0"
+  }), search ? /*#__PURE__*/React.createElement("button", {
+    onClick: () => setSearch(''),
+    className: "text-subtle hover:text-fg shrink-0"
+  }, /*#__PURE__*/React.createElement(X, {
+    size: 12
+  })) : /*#__PURE__*/React.createElement(Kbd, null, "\u2318K")), searchResults && /*#__PURE__*/React.createElement("div", {
+    className: "mt-1 rounded-md border max-h-[240px] overflow-y-auto",
+    style: {
+      borderColor: 'var(--border)',
+      background: 'var(--bg-elevated)',
+      boxShadow: 'var(--shadow-md)'
+    }
+  }, searchResults.length === 0 ? /*#__PURE__*/React.createElement("div", {
+    className: "px-2.5 py-2 text-[12px] text-subtle"
+  }, "No results") : searchResults.map(t => /*#__PURE__*/React.createElement("button", {
+    key: t.id,
+    onClick: () => {
+      useUIStore.getState().selectTask(t.id);
+      setSearch('');
+    },
+    className: "w-full flex items-center gap-2 px-2.5 h-8 hover-bg-hover transition-colors text-[12.5px] text-left"
+  }, /*#__PURE__*/React.createElement(StatusIcon, {
+    statusId: t.status,
+    size: 12
+  }), /*#__PURE__*/React.createElement("span", {
+    className: "flex-1 truncate"
+  }, t.title))))), /*#__PURE__*/React.createElement("div", {
+    className: "flex-1 overflow-y-auto px-2 pb-2"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "mb-3"
+  }, /*#__PURE__*/React.createElement(SidebarItem, {
+    active: route === '/comments',
+    onClick: () => navigate('/comments'),
+    icon: MessageSquare,
+    label: "Assigned comments",
+    badge: mentionCount
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "mb-3"
+  }, /*#__PURE__*/React.createElement(SectionHeader, {
+    label: "My tasks",
+    expanded: myTasksExpanded,
+    onToggle: () => toggleExpand('__my-tasks')
+  }), /*#__PURE__*/React.createElement(AnimatePresence, {
+    initial: false
+  }, myTasksExpanded && /*#__PURE__*/React.createElement(motion.div, {
+    initial: {
+      height: 0,
+      opacity: 0
+    },
+    animate: {
+      height: 'auto',
+      opacity: 1
+    },
+    exit: {
+      height: 0,
+      opacity: 0
+    },
+    transition: {
+      duration: 0.15,
+      ease: 'easeOut'
+    },
+    style: {
+      overflow: 'hidden'
+    }
+  }, /*#__PURE__*/React.createElement(SidebarItem, {
+    active: route === '/me/assigned',
+    onClick: () => navigate('/me/assigned'),
+    icon: CheckCircle2,
+    label: "Assigned to me",
+    indent: 1,
+    badge: myAssigned
+  }), /*#__PURE__*/React.createElement(SidebarItem, {
+    active: route === '/me/today',
+    onClick: () => navigate('/me/today'),
+    icon: Calendar,
+    label: "Today & overdue",
+    indent: 1,
+    badge: myToday
+  })))), /*#__PURE__*/React.createElement("div", {
+    className: "mb-3"
+  }, /*#__PURE__*/React.createElement(SectionHeader, {
+    label: "Personal",
+    expanded: personalExpanded,
+    onToggle: () => toggleExpand('__personal'),
+    action: /*#__PURE__*/React.createElement(HoverIconButton, {
+      icon: Plus,
+      title: "New personal list",
+      onClick: handleNewPersonalList
+    })
+  }), /*#__PURE__*/React.createElement(AnimatePresence, {
+    initial: false
+  }, personalExpanded && /*#__PURE__*/React.createElement(motion.div, {
+    initial: {
+      height: 0,
+      opacity: 0
+    },
+    animate: {
+      height: 'auto',
+      opacity: 1
+    },
+    exit: {
+      height: 0,
+      opacity: 0
+    },
+    transition: {
+      duration: 0.15,
+      ease: 'easeOut'
+    },
+    style: {
+      overflow: 'hidden'
+    }
+  }, ws.personalLists.length === 0 ? /*#__PURE__*/React.createElement("div", {
+    className: "text-[11.5px] py-1 italic",
+    style: {
+      paddingLeft: 24,
+      color: 'var(--fg-subtle)'
+    }
+  }, "No personal lists") : ws.personalLists.map(list => /*#__PURE__*/React.createElement(PersonalListRow, {
+    key: list.id,
+    list: list,
+    active: route === `/list/${list.id}`,
+    onNavigate: () => navigate(`/list/${list.id}`),
+    renaming: renaming,
+    setRenaming: setRenaming
+  }))))), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement(SectionHeader, {
+    label: "Spaces",
+    expanded: spacesExpanded,
+    onToggle: () => toggleExpand('__spaces'),
+    action: /*#__PURE__*/React.createElement(HoverIconButton, {
+      icon: Plus,
+      title: "New space",
+      onClick: handleNewSpace
+    })
+  }), /*#__PURE__*/React.createElement(AnimatePresence, {
+    initial: false
+  }, spacesExpanded && /*#__PURE__*/React.createElement(motion.div, {
+    initial: {
+      height: 0,
+      opacity: 0
+    },
+    animate: {
+      height: 'auto',
+      opacity: 1
+    },
+    exit: {
+      height: 0,
+      opacity: 0
+    },
+    transition: {
+      duration: 0.15,
+      ease: 'easeOut'
+    },
+    style: {
+      overflow: 'hidden'
+    }
+  }, ws.spaces.map(space => /*#__PURE__*/React.createElement(SpaceBlock, {
+    key: space.id,
+    space: space,
+    taskCounts: taskCounts,
+    route: route,
+    onNavigate: navigate,
+    renaming: renaming,
+    setRenaming: setRenaming
+  })))))), /*#__PURE__*/React.createElement("div", {
+    className: "border-t px-3 py-2 flex items-center",
+    style: {
+      borderColor: 'var(--border)'
+    }
+  }, /*#__PURE__*/React.createElement(ProfileMenu, null)), /*#__PURE__*/React.createElement("div", {
+    onMouseDown: e => {
+      e.preventDefault();
+      setResizing(true);
+    },
+    className: "absolute top-0 right-0 h-full transition-colors",
+    style: {
+      width: 4,
+      marginRight: -2,
+      cursor: 'col-resize',
+      background: resizing ? 'var(--accent)' : 'transparent',
+      zIndex: 10
+    },
+    onMouseEnter: e => !resizing && (e.currentTarget.style.background = 'var(--border-strong)'),
+    onMouseLeave: e => !resizing && (e.currentTarget.style.background = 'transparent')
+  }));
+};
+
+/* ════════════════════════════════════════════════════════════════════════════
+   TOPBAR
+   ════════════════════════════════════════════════════════════════════════════ */
+
+const TopBar = ({
+  breadcrumbs = [],
+  actions
+}) => {
+  const {
+    sidebarCollapsed,
+    toggleSidebar
+  } = useUIStore();
+  return /*#__PURE__*/React.createElement("header", {
+    className: "border-b flex items-center px-3 shrink-0 gap-1.5",
+    style: {
+      background: 'var(--bg)',
+      borderColor: 'var(--border)',
+      height: 40
+    }
+  }, /*#__PURE__*/React.createElement(Tip, {
+    label: "Toggle sidebar",
+    hotkey: "\u2318\\"
+  }, /*#__PURE__*/React.createElement("button", {
+    onClick: toggleSidebar,
+    className: "p-1 rounded text-muted hover:text-fg hover-bg-hover transition-colors focus-ring"
+  }, /*#__PURE__*/React.createElement(PanelLeft, {
+    size: 14,
+    strokeWidth: 1.8
+  }))), /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center gap-1.5 text-[12.5px] flex-1 min-w-0"
+  }, breadcrumbs.map((b, i) => /*#__PURE__*/React.createElement(React.Fragment, {
+    key: i
+  }, i > 0 && /*#__PURE__*/React.createElement("span", {
+    style: {
+      color: 'var(--fg-subtle)'
+    }
+  }, "/"), /*#__PURE__*/React.createElement("span", {
+    style: {
+      color: i === breadcrumbs.length - 1 ? 'var(--fg)' : 'var(--fg-muted)',
+      fontWeight: i === breadcrumbs.length - 1 ? 500 : 400
+    }
+  }, b)))), actions);
+};
+
+/* ════════════════════════════════════════════════════════════════════════════
+   PAGES — placeholder content for List, Comments, Me/*
+   ════════════════════════════════════════════════════════════════════════════ */
+
+const PageContainer = ({
+  children,
+  maxWidth = 1080
+}) => /*#__PURE__*/React.createElement("div", {
+  className: "overflow-y-auto flex-1"
+}, /*#__PURE__*/React.createElement("div", {
+  className: "mx-auto px-8 pt-5 pb-12",
+  style: {
+    maxWidth
+  }
+}, children));
+
+/* Compact page header — title left, count + actions right, single 32px row */
+const PageHeader = ({
+  title,
+  subtitle,
+  count,
+  actions
+}) => /*#__PURE__*/React.createElement("header", {
+  className: "flex items-center gap-3 mb-5"
+}, /*#__PURE__*/React.createElement("h1", {
+  className: "text-[18px] font-semibold leading-none tracking-tight"
+}, title), count !== undefined && /*#__PURE__*/React.createElement("span", {
+  className: "mono tabular-nums text-[12px]",
+  style: {
+    color: 'var(--fg-subtle)'
+  }
+}, count), subtitle && /*#__PURE__*/React.createElement("span", {
+  className: "text-[12.5px] truncate",
+  style: {
+    color: 'var(--fg-muted)'
+  }
+}, subtitle), /*#__PURE__*/React.createElement("div", {
+  className: "flex-1"
+}), actions);
+const EmptyState = ({
+  icon: Icon,
+  title,
+  description,
+  action
+}) => /*#__PURE__*/React.createElement("div", {
+  className: "flex flex-col items-center justify-center py-16 px-6 text-center"
+}, /*#__PURE__*/React.createElement("div", {
+  className: "w-14 h-14 rounded-2xl flex items-center justify-center mb-4",
+  style: {
+    background: 'var(--bg-muted)',
+    color: 'var(--fg-subtle)'
+  }
+}, /*#__PURE__*/React.createElement(Icon, {
+  size: 22,
+  strokeWidth: 1.6
+})), /*#__PURE__*/React.createElement("h3", {
+  className: "text-[15px] font-semibold mb-1.5"
+}, title), /*#__PURE__*/React.createElement("p", {
+  className: "text-[13px] text-muted max-w-[300px] leading-relaxed"
+}, description), action && /*#__PURE__*/React.createElement("div", {
+  className: "mt-4"
+}, action));
+
+/* Simple task row used in the placeholder pages */
+/* ════════════════════════════════════════════════════════════════════════════
+   TASK PICKERS — status, priority, assignee, due-date
+   ════════════════════════════════════════════════════════════════════════════ */
+
+const StatusPicker = ({
+  value,
+  onChange,
+  trigger
+}) => /*#__PURE__*/React.createElement(Popover, {
+  trigger: trigger,
+  width: 180
+}, ({
+  close
+}) => /*#__PURE__*/React.createElement("div", {
+  className: "py-1"
+}, STATUSES.map(s => /*#__PURE__*/React.createElement("button", {
+  key: s.id,
+  onClick: () => {
+    onChange(s.id);
+    close();
+  },
+  className: "w-full flex items-center gap-2 px-2.5 h-8 hover-bg-hover transition-colors text-[13px] text-left"
+}, /*#__PURE__*/React.createElement(StatusIcon, {
+  statusId: s.id
+}), /*#__PURE__*/React.createElement("span", {
+  className: "flex-1"
+}, s.label), value === s.id && /*#__PURE__*/React.createElement(Check, {
+  size: 13,
+  className: "text-accent"
+})))));
+const PriorityPicker = ({
+  value,
+  onChange,
+  trigger
+}) => /*#__PURE__*/React.createElement(Popover, {
+  trigger: trigger,
+  width: 180
+}, ({
+  close
+}) => /*#__PURE__*/React.createElement("div", {
+  className: "py-1"
+}, PRIORITIES.map(p => /*#__PURE__*/React.createElement("button", {
+  key: p.id,
+  onClick: () => {
+    onChange(p.id);
+    close();
+  },
+  className: "w-full flex items-center gap-2 px-2.5 h-8 hover-bg-hover transition-colors text-[13px] text-left"
+}, /*#__PURE__*/React.createElement(PriorityIcon, {
+  priorityId: p.id
+}), /*#__PURE__*/React.createElement("span", {
+  className: "flex-1"
+}, p.label), value === p.id && /*#__PURE__*/React.createElement(Check, {
+  size: 13,
+  className: "text-accent"
+})))));
+const AssigneePicker = ({
+  value,
+  onChange,
+  trigger
+}) => {
+  const members = useWorkspaceStore(s => s.members);
+  return /*#__PURE__*/React.createElement(Popover, {
+    trigger: trigger,
+    width: 220
+  }, ({
+    close
+  }) => /*#__PURE__*/React.createElement("div", {
+    className: "py-1 max-h-[280px] overflow-y-auto"
+  }, /*#__PURE__*/React.createElement("button", {
+    onClick: () => {
+      onChange(null);
+      close();
+    },
+    className: "w-full flex items-center gap-2 px-2.5 h-8 hover-bg-hover transition-colors text-[13px] text-left"
+  }, /*#__PURE__*/React.createElement(Avatar, {
+    user: null
+  }), /*#__PURE__*/React.createElement("span", {
+    className: "flex-1 text-muted"
+  }, "Unassigned"), value === null && /*#__PURE__*/React.createElement(Check, {
+    size: 13,
+    className: "text-accent"
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "h-px my-1",
+    style: {
+      background: 'var(--border)'
+    }
+  }), members.map(m => /*#__PURE__*/React.createElement("button", {
+    key: m.id,
+    onClick: () => {
+      onChange(m.id);
+      close();
+    },
+    className: "w-full flex items-center gap-2 px-2.5 h-8 hover-bg-hover transition-colors text-[13px] text-left"
+  }, /*#__PURE__*/React.createElement(Avatar, {
+    user: m
+  }), /*#__PURE__*/React.createElement("span", {
+    className: "flex-1"
+  }, m.name), value === m.id && /*#__PURE__*/React.createElement(Check, {
+    size: 13,
+    className: "text-accent"
+  })))));
+};
+
+/* Quick-pick due-date popover: today / tomorrow / +n days / clear */
+const DuePicker = ({
+  value,
+  onChange,
+  trigger
+}) => /*#__PURE__*/React.createElement(Popover, {
+  trigger: trigger,
+  width: 200
+}, ({
+  close
+}) => /*#__PURE__*/React.createElement("div", {
+  className: "py-1"
+}, [{
+  label: 'Today',
+  iso: dayOffset(0)
+}, {
+  label: 'Tomorrow',
+  iso: dayOffset(1)
+}, {
+  label: 'In 3 days',
+  iso: dayOffset(3)
+}, {
+  label: 'Next week',
+  iso: dayOffset(7)
+}, {
+  label: 'In 2 weeks',
+  iso: dayOffset(14)
+}].map(opt => /*#__PURE__*/React.createElement("button", {
+  key: opt.label,
+  onClick: () => {
+    onChange(opt.iso);
+    close();
+  },
+  className: "w-full flex items-center gap-2 px-2.5 h-8 hover-bg-hover transition-colors text-[13px] text-left"
+}, /*#__PURE__*/React.createElement(Calendar, {
+  size: 13,
+  className: "text-muted"
+}), /*#__PURE__*/React.createElement("span", {
+  className: "flex-1"
+}, opt.label), /*#__PURE__*/React.createElement("span", {
+  className: "text-[11px] text-subtle"
+}, new Date(opt.iso).toLocaleDateString('en-US', {
+  month: 'short',
+  day: 'numeric'
+})))), value && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+  className: "h-px my-1",
+  style: {
+    background: 'var(--border)'
+  }
+}), /*#__PURE__*/React.createElement("button", {
+  onClick: () => {
+    onChange(null);
+    close();
+  },
+  className: "w-full flex items-center gap-2 px-2.5 h-8 hover-bg-hover transition-colors text-[13px] text-left",
+  style: {
+    color: 'var(--priority-urgent)'
+  }
+}, /*#__PURE__*/React.createElement(X, {
+  size: 13
+}), " Clear date"))));
+
+/* ════════════════════════════════════════════════════════════════════════════
+   TASK ROW — used in list view (status-grouped) inside a list page
+   ════════════════════════════════════════════════════════════════════════════ */
+
+/* Compact subtask row — used inline under TaskRow when expanded */
+const InlineSubtaskRow = ({
+  taskId,
+  subtask
+}) => {
+  const toggleSubtask = useTaskStore(s => s.toggleSubtask);
+  const updateSubtask = useTaskStore(s => s.updateSubtask);
+  const deleteSubtask = useTaskStore(s => s.deleteSubtask);
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState(subtask.title);
+  const inputRef = useRef(null);
+  useEffect(() => {
+    setDraft(subtask.title);
+  }, [subtask.title]);
+  useEffect(() => {
+    if (editing) {
+      inputRef.current?.focus();
+      inputRef.current?.select();
+    }
+  }, [editing]);
+  const commit = () => {
+    const trimmed = draft.trim();
+    if (trimmed && trimmed !== subtask.title) updateSubtask(taskId, subtask.id, {
+      title: trimmed
+    });else setDraft(subtask.title);
+    setEditing(false);
+  };
+  return /*#__PURE__*/React.createElement("div", {
+    className: "group flex items-center gap-2.5 h-9 pl-12 pr-4 border-b cursor-default hover-bg-hover transition-colors",
+    style: {
+      borderColor: 'var(--border)'
+    },
+    onClick: e => e.stopPropagation()
+  }, /*#__PURE__*/React.createElement("button", {
+    onClick: () => toggleSubtask(taskId, subtask.id),
+    className: "flex items-center justify-center w-4 h-4 shrink-0"
+  }, subtask.done ? /*#__PURE__*/React.createElement(CheckCircle2, {
+    size: 14,
+    style: {
+      color: 'var(--status-done)'
+    }
+  }) : /*#__PURE__*/React.createElement(Circle, {
+    size: 14,
+    className: "text-subtle hover:text-fg",
+    strokeWidth: 1.8
+  })), editing ? /*#__PURE__*/React.createElement("input", {
+    ref: inputRef,
+    value: draft,
+    onChange: e => setDraft(e.target.value),
+    onBlur: commit,
+    onKeyDown: e => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        commit();
+      } else if (e.key === 'Escape') {
+        setDraft(subtask.title);
+        setEditing(false);
+      }
+    },
+    className: "flex-1 bg-transparent outline-none text-[13px]"
+  }) : /*#__PURE__*/React.createElement("span", {
+    onClick: () => !subtask.done && setEditing(true),
+    className: "flex-1 text-[13px] cursor-text truncate",
+    style: {
+      color: subtask.done ? 'var(--fg-muted)' : 'var(--fg)'
+    }
+  }, subtask.title), /*#__PURE__*/React.createElement("button", {
+    onClick: () => deleteSubtask(taskId, subtask.id),
+    className: "opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded text-subtle hover:text-fg shrink-0"
+  }, /*#__PURE__*/React.createElement(X, {
+    size: 12
+  })));
+};
+
+/* Inline subtask quick-add — appears when user clicks "Add subtask" inside a row */
+const InlineSubtaskAdd = ({
+  taskId,
+  onDone
+}) => {
+  const addSubtask = useTaskStore(s => s.addSubtask);
+  const [draft, setDraft] = useState('');
+  const inputRef = useRef(null);
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
+  const commit = (continueAdding = false) => {
+    const trimmed = draft.trim();
+    if (trimmed) addSubtask(taskId, trimmed);
+    setDraft('');
+    if (!continueAdding) onDone();
+  };
+  return /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center gap-2.5 h-9 pl-12 pr-4 border-b",
+    style: {
+      borderColor: 'var(--border)',
+      background: 'var(--bg-muted)'
+    },
+    onClick: e => e.stopPropagation()
+  }, /*#__PURE__*/React.createElement(Circle, {
+    size: 14,
+    className: "text-subtle shrink-0",
+    strokeWidth: 1.8
+  }), /*#__PURE__*/React.createElement("input", {
+    ref: inputRef,
+    value: draft,
+    onChange: e => setDraft(e.target.value),
+    onBlur: () => commit(false),
+    onKeyDown: e => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        commit(true);
+        inputRef.current?.focus();
+      } else if (e.key === 'Escape') {
+        setDraft('');
+        onDone();
+      }
+    },
+    placeholder: "Subtask title \u2014 Enter to add another, Esc to finish",
+    className: "flex-1 bg-transparent outline-none text-[13px] placeholder:text-subtle"
+  }));
+};
+const TaskRow = ({
+  task,
+  onOpen
+}) => {
+  const setStatus = useTaskStore(s => s.setStatus);
+  const setPriority = useTaskStore(s => s.setPriority);
+  const setAssignee = useTaskStore(s => s.setAssignee);
+  const updateTask = useTaskStore(s => s.updateTask);
+  const members = useWorkspaceStore(s => s.members);
+  const assignee = members.find(m => m.id === task.assigneeId);
+  const hasSubtasks = (task.subtasks?.length || 0) > 0;
+  const [expanded, setExpanded] = useState(false);
+  const [adding, setAdding] = useState(false);
+  const subtasksDone = task.subtasks?.filter(s => s.done).length || 0;
+  const toggleExpand = e => {
+    e.stopPropagation();
+    if (hasSubtasks) {
+      setExpanded(!expanded);
+    } else {
+      setExpanded(true);
+      setAdding(true);
+    }
+  };
+  return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+    className: "group flex items-center gap-3 h-11 px-4 border-b cursor-pointer transition-colors hover-bg-hover",
+    style: {
+      borderColor: 'var(--border)'
+    },
+    onClick: () => onOpen(task.id)
+  }, /*#__PURE__*/React.createElement("button", {
+    onClick: toggleExpand,
+    className: `w-5 h-5 flex items-center justify-center rounded transition-all shrink-0 ${hasSubtasks ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`,
+    title: hasSubtasks ? expanded ? 'Collapse subtasks' : 'Expand subtasks' : 'Add subtask',
+    style: {
+      color: 'var(--fg-muted)'
+    }
+  }, /*#__PURE__*/React.createElement(ChevronRight, {
+    size: 13,
+    strokeWidth: 2,
+    style: {
+      transform: expanded ? 'rotate(90deg)' : 'none',
+      transition: 'transform 150ms'
+    }
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center gap-1 shrink-0",
+    onClick: e => e.stopPropagation()
+  }, /*#__PURE__*/React.createElement(StatusPicker, {
+    value: task.status,
+    onChange: v => setStatus(task.id, v),
+    trigger: /*#__PURE__*/React.createElement("button", {
+      className: "flex items-center justify-center w-5 h-5 rounded hover-bg-hover transition-colors"
+    }, /*#__PURE__*/React.createElement(StatusIcon, {
+      statusId: task.status
+    }))
+  }), /*#__PURE__*/React.createElement(PriorityPicker, {
+    value: task.priority,
+    onChange: v => setPriority(task.id, v),
+    trigger: /*#__PURE__*/React.createElement("button", {
+      className: "flex items-center justify-center w-5 h-5 rounded hover-bg-hover transition-colors"
+    }, /*#__PURE__*/React.createElement(PriorityIcon, {
+      priorityId: task.priority
+    }))
+  })), /*#__PURE__*/React.createElement("span", {
+    className: "text-[13.5px] flex-1 min-w-0 truncate",
+    style: {
+      color: task.status === 'done' ? 'var(--fg-muted)' : 'var(--fg)'
+    }
+  }, task.title), (hasSubtasks || task.comments?.length > 0) && /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center gap-2.5 text-subtle text-[11.5px] shrink-0"
+  }, hasSubtasks && /*#__PURE__*/React.createElement("span", {
+    className: "flex items-center gap-1",
+    style: {
+      color: subtasksDone === task.subtasks.length ? 'var(--status-done)' : 'var(--fg-muted)'
+    }
+  }, /*#__PURE__*/React.createElement(CheckCircle2, {
+    size: 11.5,
+    strokeWidth: 1.8
+  }), subtasksDone, "/", task.subtasks.length), task.comments?.length > 0 && /*#__PURE__*/React.createElement("span", {
+    className: "flex items-center gap-1"
+  }, /*#__PURE__*/React.createElement(MessageSquare, {
+    size: 11.5,
+    strokeWidth: 1.8
+  }), task.comments.length)), /*#__PURE__*/React.createElement("span", {
+    className: "shrink-0 w-[88px] text-right",
+    onClick: e => e.stopPropagation()
+  }, /*#__PURE__*/React.createElement(DuePicker, {
+    value: task.due,
+    onChange: v => updateTask(task.id, {
+      due: v
+    }),
+    trigger: /*#__PURE__*/React.createElement("button", {
+      className: "px-1 py-0.5 rounded hover-bg-hover"
+    }, task.due ? /*#__PURE__*/React.createElement(DueChip, {
+      iso: task.due
+    }) : /*#__PURE__*/React.createElement("span", {
+      className: "text-[11.5px] text-subtle"
+    }, "No date"))
+  })), /*#__PURE__*/React.createElement("span", {
+    onClick: e => e.stopPropagation()
+  }, /*#__PURE__*/React.createElement(AssigneePicker, {
+    value: task.assigneeId,
+    onChange: v => setAssignee(task.id, v),
+    trigger: /*#__PURE__*/React.createElement("button", {
+      className: "flex items-center justify-center rounded-full"
+    }, /*#__PURE__*/React.createElement(Avatar, {
+      user: assignee
+    }))
+  }))), /*#__PURE__*/React.createElement(AnimatePresence, {
+    initial: false
+  }, expanded && (hasSubtasks || adding) && /*#__PURE__*/React.createElement(motion.div, {
+    initial: {
+      height: 0,
+      opacity: 0
+    },
+    animate: {
+      height: 'auto',
+      opacity: 1
+    },
+    exit: {
+      height: 0,
+      opacity: 0
+    },
+    transition: {
+      duration: 0.15,
+      ease: 'easeOut'
+    },
+    style: {
+      overflow: 'hidden'
+    }
+  }, task.subtasks?.map(st => /*#__PURE__*/React.createElement(InlineSubtaskRow, {
+    key: st.id,
+    taskId: task.id,
+    subtask: st
+  })), adding ? /*#__PURE__*/React.createElement(InlineSubtaskAdd, {
+    taskId: task.id,
+    onDone: () => setAdding(false)
+  }) : /*#__PURE__*/React.createElement("button", {
+    onClick: e => {
+      e.stopPropagation();
+      setAdding(true);
+    },
+    className: "flex items-center gap-2.5 h-9 pl-12 pr-4 w-full text-[12.5px] text-subtle hover:text-fg hover-bg-hover transition-colors border-b",
+    style: {
+      borderColor: 'var(--border)'
+    }
+  }, /*#__PURE__*/React.createElement(Plus, {
+    size: 12
+  }), "Add subtask"))));
+};
+const ListGroupHeader = ({
+  status,
+  count,
+  onAdd
+}) => {
+  const s = getStatus(status);
+  return /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center gap-2 h-9 px-4 sticky top-0 z-10 border-b group",
+    style: {
+      background: 'var(--bg-muted)',
+      borderColor: 'var(--border)'
+    }
+  }, /*#__PURE__*/React.createElement(StatusIcon, {
+    statusId: status
+  }), /*#__PURE__*/React.createElement("span", {
+    className: "text-[12.5px] font-semibold"
+  }, s.label), /*#__PURE__*/React.createElement("span", {
+    className: "text-[12px] text-subtle"
+  }, count), /*#__PURE__*/React.createElement("div", {
+    className: "flex-1"
+  }), /*#__PURE__*/React.createElement("button", {
+    onClick: onAdd,
+    className: "opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded hover-bg-hover text-muted hover:text-fg"
+  }, /*#__PURE__*/React.createElement(Plus, {
+    size: 13
+  })));
+};
+const ListView = ({
+  listId,
+  onOpenTask
+}) => {
+  const tasks = useTaskStore(s => s.getTasksByListId(listId));
+  const addTask = useTaskStore(s => s.addTask);
+  const grouped = useMemo(() => {
+    const g = {};
+    STATUSES.forEach(s => g[s.id] = []);
+    tasks.forEach(t => {
+      (g[t.status] ||= []).push(t);
+    });
+    return g;
+  }, [tasks]);
+  const handleAddInStatus = status => {
+    const id = addTask(listId, {
+      status
+    });
+    onOpenTask(id);
+  };
+  return /*#__PURE__*/React.createElement("div", {
+    className: "overflow-y-auto h-full",
+    style: {
+      background: 'var(--bg-elevated)'
+    }
+  }, STATUSES.filter(s => grouped[s.id]?.length > 0).map(s => /*#__PURE__*/React.createElement("div", {
+    key: s.id
+  }, /*#__PURE__*/React.createElement(ListGroupHeader, {
+    status: s.id,
+    count: grouped[s.id].length,
+    onAdd: () => handleAddInStatus(s.id)
+  }), grouped[s.id].map(t => /*#__PURE__*/React.createElement(TaskRow, {
+    key: t.id,
+    task: t,
+    onOpen: onOpenTask
+  })))), /*#__PURE__*/React.createElement("button", {
+    onClick: () => handleAddInStatus('todo'),
+    className: "flex items-center gap-2 h-11 px-4 w-full text-[13px] text-subtle hover:text-fg hover-bg-hover transition-colors"
+  }, /*#__PURE__*/React.createElement(Plus, {
+    size: 13
+  }), "Add task"));
+};
+
+/* ════════════════════════════════════════════════════════════════════════════
+   BOARD VIEW
+   ════════════════════════════════════════════════════════════════════════════ */
+
+const BoardCard = ({
+  task,
+  onOpen
+}) => {
+  const members = useWorkspaceStore(s => s.members);
+  const assignee = members.find(m => m.id === task.assigneeId);
+  return /*#__PURE__*/React.createElement(motion.div, {
+    layout: true,
+    initial: {
+      opacity: 0,
+      y: 6
+    },
+    animate: {
+      opacity: 1,
+      y: 0
+    },
+    transition: {
+      duration: 0.18,
+      ease: 'easeOut'
+    },
+    onClick: () => onOpen(task.id),
+    className: "rounded-lg p-3 cursor-pointer transition-all shadow-soft hover:shadow-mid border",
+    style: {
+      background: 'var(--bg-elevated)',
+      borderColor: 'var(--border)'
+    },
+    whileHover: {
+      y: -1
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex items-start gap-2 mb-2"
+  }, /*#__PURE__*/React.createElement(PriorityIcon, {
+    priorityId: task.priority,
+    size: 13
+  }), /*#__PURE__*/React.createElement("span", {
+    className: "text-[13px] leading-snug flex-1",
+    style: {
+      color: task.status === 'done' ? 'var(--fg-muted)' : 'var(--fg)'
+    }
+  }, task.title)), /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center gap-2.5 text-subtle text-[11px]"
+  }, /*#__PURE__*/React.createElement(DueChip, {
+    iso: task.due
+  }), task.subtasks?.length > 0 && /*#__PURE__*/React.createElement("span", {
+    className: "flex items-center gap-1"
+  }, /*#__PURE__*/React.createElement(CheckCircle2, {
+    size: 11
+  }), task.subtasks.filter(s => s.done).length, "/", task.subtasks.length), task.comments?.length > 0 && /*#__PURE__*/React.createElement("span", {
+    className: "flex items-center gap-1"
+  }, /*#__PURE__*/React.createElement(MessageSquare, {
+    size: 11
+  }), task.comments.length), /*#__PURE__*/React.createElement("div", {
+    className: "flex-1"
+  }), /*#__PURE__*/React.createElement(Avatar, {
+    user: assignee
+  })));
+};
+const BoardColumn = ({
+  status,
+  tasks,
+  listId,
+  onOpenTask
+}) => {
+  const s = getStatus(status);
+  const addTask = useTaskStore(t => t.addTask);
+  const handleAdd = () => {
+    const id = addTask(listId, {
+      status
+    });
+    onOpenTask(id);
+  };
+  return /*#__PURE__*/React.createElement("div", {
+    className: "flex flex-col",
+    style: {
+      width: 300,
+      flexShrink: 0,
+      minHeight: 0
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center gap-2 px-2 h-10 mb-1"
+  }, /*#__PURE__*/React.createElement(StatusIcon, {
+    statusId: status
+  }), /*#__PURE__*/React.createElement("span", {
+    className: "text-[12.5px] font-semibold"
+  }, s.label), /*#__PURE__*/React.createElement("span", {
+    className: "text-[11.5px] text-subtle"
+  }, tasks.length), /*#__PURE__*/React.createElement("div", {
+    className: "flex-1"
+  }), /*#__PURE__*/React.createElement("button", {
+    onClick: handleAdd,
+    className: "p-1 rounded hover-bg-hover text-subtle hover:text-fg transition-colors"
+  }, /*#__PURE__*/React.createElement(Plus, {
+    size: 13
+  }))), /*#__PURE__*/React.createElement("div", {
+    className: "flex-1 overflow-y-auto px-1 pb-3"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex flex-col gap-2"
+  }, /*#__PURE__*/React.createElement(AnimatePresence, null, tasks.map(t => /*#__PURE__*/React.createElement(BoardCard, {
+    key: t.id,
+    task: t,
+    onOpen: onOpenTask
+  }))), tasks.length === 0 && /*#__PURE__*/React.createElement("button", {
+    onClick: handleAdd,
+    className: "rounded-lg h-16 text-[12px] text-subtle hover:text-fg transition-colors flex items-center justify-center gap-1.5 border border-dashed",
+    style: {
+      borderColor: 'var(--border)'
+    }
+  }, /*#__PURE__*/React.createElement(Plus, {
+    size: 12
+  }), "Add task"))));
+};
+const BoardView = ({
+  listId,
+  onOpenTask
+}) => {
+  const tasks = useTaskStore(s => s.getTasksByListId(listId));
+  return /*#__PURE__*/React.createElement("div", {
+    className: "flex h-full overflow-x-auto px-4 pt-3 gap-4",
+    style: {
+      background: 'var(--bg-elevated)'
+    }
+  }, STATUSES.filter(s => s.id !== 'blocked' || tasks.some(t => t.status === 'blocked')).map(s => /*#__PURE__*/React.createElement(BoardColumn, {
+    key: s.id,
+    status: s.id,
+    tasks: tasks.filter(t => t.status === s.id),
+    listId: listId,
+    onOpenTask: onOpenTask
+  })));
+};
+
+/* ════════════════════════════════════════════════════════════════════════════
+   SUBTASKS — inside the task modal
+   ════════════════════════════════════════════════════════════════════════════ */
+
+const SubtaskItem = ({
+  taskId,
+  subtask
+}) => {
+  const toggleSubtask = useTaskStore(s => s.toggleSubtask);
+  const updateSubtask = useTaskStore(s => s.updateSubtask);
+  const deleteSubtask = useTaskStore(s => s.deleteSubtask);
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState(subtask.title);
+  const inputRef = useRef(null);
+  useEffect(() => {
+    setDraft(subtask.title);
+  }, [subtask.title]);
+  useEffect(() => {
+    if (editing) {
+      inputRef.current?.focus();
+      inputRef.current?.select();
+    }
+  }, [editing]);
+  const commit = () => {
+    const trimmed = draft.trim();
+    if (trimmed && trimmed !== subtask.title) updateSubtask(taskId, subtask.id, {
+      title: trimmed
+    });else setDraft(subtask.title);
+    setEditing(false);
+  };
+  return /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center gap-2 py-1.5 group hover-bg-hover -mx-2 px-2 rounded"
+  }, /*#__PURE__*/React.createElement("button", {
+    onClick: () => toggleSubtask(taskId, subtask.id),
+    className: "flex items-center justify-center w-4 h-4 shrink-0"
+  }, subtask.done ? /*#__PURE__*/React.createElement(CheckCircle2, {
+    size: 15,
+    style: {
+      color: 'var(--status-done)'
+    }
+  }) : /*#__PURE__*/React.createElement(Circle, {
+    size: 15,
+    className: "text-subtle hover:text-fg"
+  })), editing ? /*#__PURE__*/React.createElement("input", {
+    ref: inputRef,
+    value: draft,
+    onChange: e => setDraft(e.target.value),
+    onBlur: commit,
+    onKeyDown: e => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        commit();
+      } else if (e.key === 'Escape') {
+        setDraft(subtask.title);
+        setEditing(false);
+      }
+    },
+    className: "flex-1 bg-transparent outline-none text-[13px]"
+  }) : /*#__PURE__*/React.createElement("span", {
+    onClick: () => !subtask.done && setEditing(true),
+    className: "flex-1 text-[13px] cursor-text",
+    style: {
+      textDecoration: subtask.done ? 'line-through' : 'none',
+      color: subtask.done ? 'var(--fg-muted)' : 'var(--fg)'
+    }
+  }, subtask.title), /*#__PURE__*/React.createElement("button", {
+    onClick: () => deleteSubtask(taskId, subtask.id),
+    className: "opacity-0 group-hover:opacity-100 transition-opacity p-1 -mr-1 rounded text-subtle hover:text-fg"
+  }, /*#__PURE__*/React.createElement(X, {
+    size: 12
+  })));
+};
+const SubtaskList = ({
+  task
+}) => {
+  const addSubtask = useTaskStore(s => s.addSubtask);
+  const [adding, setAdding] = useState(false);
+  const [draft, setDraft] = useState('');
+  const inputRef = useRef(null);
+  useEffect(() => {
+    if (adding) inputRef.current?.focus();
+  }, [adding]);
+  const startAdding = () => {
+    setDraft('');
+    setAdding(true);
+  };
+  const commit = (continueAdding = false) => {
+    const trimmed = draft.trim();
+    if (trimmed) addSubtask(task.id, trimmed);
+    setDraft('');
+    if (!continueAdding) setAdding(false);
+  };
+  const total = task.subtasks?.length || 0;
+  const done = task.subtasks?.filter(s => s.done).length || 0;
+  const progress = total > 0 ? done / total * 100 : 0;
+  return /*#__PURE__*/React.createElement("div", {
+    className: "mb-6"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center gap-2 mb-2"
+  }, /*#__PURE__*/React.createElement("h4", {
+    className: "text-[11px] font-semibold uppercase tracking-wider text-subtle"
+  }, "Subtasks"), total > 0 && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("span", {
+    className: "text-[11px] text-subtle mono tabular-nums"
+  }, done, " / ", total), /*#__PURE__*/React.createElement("div", {
+    className: "flex-1 max-w-[120px] h-[2px] rounded-full overflow-hidden ml-1",
+    style: {
+      background: 'var(--bg-hover)'
+    }
+  }, /*#__PURE__*/React.createElement(motion.div, {
+    animate: {
+      width: `${progress}%`
+    },
+    transition: {
+      duration: 0.3,
+      ease: 'easeOut'
+    },
+    className: "h-full rounded-full",
+    style: {
+      background: 'var(--status-done)'
+    }
+  })))), /*#__PURE__*/React.createElement("div", {
+    className: "flex flex-col"
+  }, task.subtasks?.map(st => /*#__PURE__*/React.createElement(SubtaskItem, {
+    key: st.id,
+    taskId: task.id,
+    subtask: st
+  })), adding ? /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center gap-2 py-1.5 -mx-2 px-2 rounded"
+  }, /*#__PURE__*/React.createElement(Circle, {
+    size: 15,
+    className: "text-subtle shrink-0"
+  }), /*#__PURE__*/React.createElement("input", {
+    ref: inputRef,
+    value: draft,
+    onChange: e => setDraft(e.target.value),
+    onBlur: () => commit(false),
+    onKeyDown: e => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        commit(true);
+        inputRef.current?.focus();
+      } else if (e.key === 'Escape') {
+        setDraft('');
+        setAdding(false);
+      }
+    },
+    placeholder: "Subtask title \u2014 Enter to add another, Esc to cancel",
+    className: "flex-1 bg-transparent outline-none text-[13px] placeholder:text-subtle"
+  })) : /*#__PURE__*/React.createElement("button", {
+    onClick: startAdding,
+    className: "flex items-center gap-2 py-1.5 -mx-2 px-2 rounded text-subtle hover:text-fg text-[13px] hover-bg-hover transition-colors"
+  }, /*#__PURE__*/React.createElement(Plus, {
+    size: 13
+  }), " Add subtask")));
+};
+
+/* ════════════════════════════════════════════════════════════════════════════
+   TASK MODAL
+   ════════════════════════════════════════════════════════════════════════════ */
+
+const MetaRow = ({
+  label,
+  children
+}) => /*#__PURE__*/React.createElement("div", {
+  className: "flex items-start gap-3 py-2"
+}, /*#__PURE__*/React.createElement("span", {
+  className: "text-[12px] text-muted w-[80px] shrink-0 pt-1"
+}, label), /*#__PURE__*/React.createElement("div", {
+  className: "flex-1 min-w-0"
+}, children));
+const TaskModal = () => {
+  const selectedTaskId = useUIStore(s => s.selectedTaskId);
+  const selectTask = useUIStore(s => s.selectTask);
+  const tasks = useTaskStore(s => s.tasks);
+  const updateTask = useTaskStore(s => s.updateTask);
+  const setStatus = useTaskStore(s => s.setStatus);
+  const setPriority = useTaskStore(s => s.setPriority);
+  const setAssignee = useTaskStore(s => s.setAssignee);
+  const addComment = useTaskStore(s => s.addComment);
+  const deleteTask = useTaskStore(s => s.deleteTask);
+  const ws = useWorkspaceStore();
+  const task = tasks.find(t => t.id === selectedTaskId);
+  const [commentDraft, setCommentDraft] = useState('');
+  const [titleDraft, setTitleDraft] = useState('');
+  const [descDraft, setDescDraft] = useState('');
+  useEffect(() => {
+    if (task) {
+      setTitleDraft(task.title);
+      setDescDraft(task.description || '');
+    }
+  }, [task?.id]);
+  useEffect(() => {
+    if (!selectedTaskId) return;
+    const onKey = e => {
+      if (e.key === 'Escape') selectTask(null);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [selectedTaskId, selectTask]);
+
+  /* Note: don't early-return on missing task — let AnimatePresence run exit animation.
+     We guard derived values below with optional chaining. */
+  const found = task ? ws.findList(task.listId) : null;
+  const list = found?.list;
+  const space = found?.spaceId ? ws.spaces.find(s => s.id === found.spaceId) : null;
+  const assignee = task ? ws.members.find(m => m.id === task.assigneeId) : null;
+  return /*#__PURE__*/React.createElement(AnimatePresence, null, task && /*#__PURE__*/React.createElement(motion.div, {
+    initial: {
+      opacity: 0
+    },
+    animate: {
+      opacity: 1
+    },
+    exit: {
+      opacity: 0
+    },
+    transition: {
+      duration: 0.12
+    },
+    className: "fixed inset-0 z-[100] flex items-center justify-center",
+    style: {
+      background: 'rgba(20,18,14,0.40)',
+      backdropFilter: 'blur(2px)'
+    },
+    onClick: () => selectTask(null)
+  }, /*#__PURE__*/React.createElement(motion.div, {
+    initial: {
+      opacity: 0,
+      y: 12,
+      scale: 0.98
+    },
+    animate: {
+      opacity: 1,
+      y: 0,
+      scale: 1
+    },
+    exit: {
+      opacity: 0,
+      y: 8,
+      scale: 0.98
+    },
+    transition: {
+      duration: 0.22,
+      ease: [0.16, 1, 0.3, 1]
+    },
+    onClick: e => e.stopPropagation(),
+    className: "rounded-xl shadow-modal border w-full max-w-[860px] h-[80vh] mx-4 grid overflow-hidden",
+    style: {
+      gridTemplateColumns: '1fr 280px',
+      background: 'var(--bg-elevated)',
+      borderColor: 'var(--border)'
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex flex-col overflow-hidden"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center gap-2 h-12 px-5 border-b shrink-0",
+    style: {
+      borderColor: 'var(--border)'
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "flex items-center gap-1.5 text-[12px] text-muted"
+  }, space && /*#__PURE__*/React.createElement("span", {
+    className: "w-2 h-2 rounded-sm",
+    style: {
+      background: space.color
+    }
+  }), space?.name || 'Personal'), list && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("span", {
+    className: "text-subtle"
+  }, "/"), /*#__PURE__*/React.createElement("span", {
+    className: "text-[12px] text-muted"
+  }, list.name)), /*#__PURE__*/React.createElement("span", {
+    className: "text-subtle"
+  }, "\xB7"), /*#__PURE__*/React.createElement("span", {
+    className: "mono text-[12px] text-subtle"
+  }, task.id.toUpperCase()), /*#__PURE__*/React.createElement("div", {
+    className: "flex-1"
+  }), /*#__PURE__*/React.createElement(Tip, {
+    label: "Copy link"
+  }, /*#__PURE__*/React.createElement("button", {
+    className: "p-1.5 rounded hover-bg-hover text-muted hover:text-fg"
+  }, /*#__PURE__*/React.createElement(Copy, {
+    size: 13
+  }))), /*#__PURE__*/React.createElement(Tip, {
+    label: "Delete"
+  }, /*#__PURE__*/React.createElement("button", {
+    onClick: () => {
+      deleteTask(task.id);
+      selectTask(null);
+    },
+    className: "p-1.5 rounded hover-bg-hover text-muted hover:text-fg"
+  }, /*#__PURE__*/React.createElement(Trash2, {
+    size: 13
+  }))), /*#__PURE__*/React.createElement("button", {
+    onClick: () => selectTask(null),
+    className: "p-1.5 rounded hover-bg-hover text-muted hover:text-fg"
+  }, /*#__PURE__*/React.createElement(X, {
+    size: 14
+  }))), /*#__PURE__*/React.createElement("div", {
+    className: "flex-1 overflow-y-auto px-6 py-5"
+  }, /*#__PURE__*/React.createElement("input", {
+    value: titleDraft,
+    onChange: e => setTitleDraft(e.target.value),
+    onBlur: () => titleDraft.trim() && updateTask(task.id, {
+      title: titleDraft.trim()
+    }),
+    onKeyDown: e => {
+      if (e.key === 'Enter') e.target.blur();
+    },
+    className: "w-full bg-transparent outline-none serif text-[28px] leading-tight mb-2 placeholder:text-subtle",
+    placeholder: "Task title"
+  }), /*#__PURE__*/React.createElement("textarea", {
+    value: descDraft,
+    onChange: e => setDescDraft(e.target.value),
+    onBlur: () => updateTask(task.id, {
+      description: descDraft
+    }),
+    placeholder: "Add a description\u2026",
+    className: "w-full bg-transparent outline-none text-[13.5px] leading-relaxed resize-none placeholder:text-subtle mb-6",
+    rows: 3
+  }), /*#__PURE__*/React.createElement(SubtaskList, {
+    task: task
+  }), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h4", {
+    className: "text-[11px] font-semibold uppercase tracking-wider text-subtle mb-3"
+  }, "Activity"), /*#__PURE__*/React.createElement("div", {
+    className: "flex flex-col gap-3 mb-4"
+  }, (task.comments || []).map(c => {
+    const u = ws.members.find(m => m.id === c.userId);
+    return /*#__PURE__*/React.createElement("div", {
+      key: c.id,
+      className: "flex gap-2.5"
+    }, /*#__PURE__*/React.createElement(Avatar, {
+      user: u,
+      size: "md"
+    }), /*#__PURE__*/React.createElement("div", {
+      className: "flex-1"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "flex items-baseline gap-2 mb-0.5"
+    }, /*#__PURE__*/React.createElement("span", {
+      className: "text-[13px] font-medium"
+    }, u?.name), /*#__PURE__*/React.createElement("span", {
+      className: "text-[11.5px] text-subtle"
+    }, new Date(c.ts).toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric'
+    }))), /*#__PURE__*/React.createElement("p", {
+      className: "text-[13px] leading-relaxed text-fg"
+    }, c.body)));
+  }), (!task.comments || task.comments.length === 0) && /*#__PURE__*/React.createElement("p", {
+    className: "text-[12.5px] text-subtle italic"
+  }, "No activity yet.")), /*#__PURE__*/React.createElement("div", {
+    className: "flex gap-2.5 items-start"
+  }, /*#__PURE__*/React.createElement(Avatar, {
+    user: ws.members[5],
+    size: "md"
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "flex-1 border rounded-lg overflow-hidden",
+    style: {
+      borderColor: 'var(--border)'
+    }
+  }, /*#__PURE__*/React.createElement("textarea", {
+    value: commentDraft,
+    onChange: e => setCommentDraft(e.target.value),
+    onKeyDown: e => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'Enter' && commentDraft.trim()) {
+        e.preventDefault();
+        addComment(task.id, commentDraft.trim());
+        setCommentDraft('');
+      }
+    },
+    placeholder: "Leave a comment\u2026",
+    rows: 2,
+    className: "w-full px-3 py-2 bg-transparent outline-none text-[13px] resize-none placeholder:text-subtle"
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center justify-between px-2.5 py-1.5",
+    style: {
+      background: 'var(--bg-muted)'
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex gap-1 text-subtle"
+  }, /*#__PURE__*/React.createElement("button", {
+    className: "p-1 rounded hover:text-fg hover-bg-hover"
+  }, /*#__PURE__*/React.createElement(AtSign, {
+    size: 13
+  })), /*#__PURE__*/React.createElement("button", {
+    className: "p-1 rounded hover:text-fg hover-bg-hover"
+  }, /*#__PURE__*/React.createElement(Paperclip, {
+    size: 13
+  }))), /*#__PURE__*/React.createElement("button", {
+    disabled: !commentDraft.trim(),
+    onClick: () => {
+      addComment(task.id, commentDraft.trim());
+      setCommentDraft('');
+    },
+    className: "flex items-center gap-1 h-6 px-2 rounded text-[12px] font-medium transition-all",
+    style: {
+      background: commentDraft.trim() ? 'var(--fg)' : 'var(--bg-hover)',
+      color: commentDraft.trim() ? 'var(--bg)' : 'var(--fg-subtle)'
+    }
+  }, "Comment ", /*#__PURE__*/React.createElement(Kbd, null, "\u2318\u21B5")))))))), /*#__PURE__*/React.createElement("div", {
+    className: "border-l overflow-y-auto",
+    style: {
+      borderColor: 'var(--border)',
+      background: 'var(--bg-muted)'
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "px-4 py-4"
+  }, /*#__PURE__*/React.createElement(MetaRow, {
+    label: "Status"
+  }, /*#__PURE__*/React.createElement(StatusPicker, {
+    value: task.status,
+    onChange: v => setStatus(task.id, v),
+    trigger: /*#__PURE__*/React.createElement("button", {
+      className: "flex items-center gap-2 -mx-2 px-2 h-7 rounded hover-bg-hover text-[13px] w-full"
+    }, /*#__PURE__*/React.createElement(StatusIcon, {
+      statusId: task.status
+    }), getStatus(task.status).label)
+  })), /*#__PURE__*/React.createElement(MetaRow, {
+    label: "Priority"
+  }, /*#__PURE__*/React.createElement(PriorityPicker, {
+    value: task.priority,
+    onChange: v => setPriority(task.id, v),
+    trigger: /*#__PURE__*/React.createElement("button", {
+      className: "flex items-center gap-2 -mx-2 px-2 h-7 rounded hover-bg-hover text-[13px] w-full"
+    }, /*#__PURE__*/React.createElement(PriorityIcon, {
+      priorityId: task.priority
+    }), getPriority(task.priority).label)
+  })), /*#__PURE__*/React.createElement(MetaRow, {
+    label: "Assignee"
+  }, /*#__PURE__*/React.createElement(AssigneePicker, {
+    value: task.assigneeId,
+    onChange: v => setAssignee(task.id, v),
+    trigger: /*#__PURE__*/React.createElement("button", {
+      className: "flex items-center gap-2 -mx-2 px-2 h-7 rounded hover-bg-hover text-[13px] w-full"
+    }, /*#__PURE__*/React.createElement(Avatar, {
+      user: assignee
+    }), /*#__PURE__*/React.createElement("span", {
+      className: !assignee ? 'text-muted' : ''
+    }, assignee?.name || 'Unassigned'))
+  })), /*#__PURE__*/React.createElement(MetaRow, {
+    label: "Due"
+  }, /*#__PURE__*/React.createElement(DuePicker, {
+    value: task.due,
+    onChange: v => updateTask(task.id, {
+      due: v
+    }),
+    trigger: /*#__PURE__*/React.createElement("button", {
+      className: "flex items-center gap-2 -mx-2 px-2 h-7 rounded hover-bg-hover text-[13px] w-full"
+    }, /*#__PURE__*/React.createElement(Calendar, {
+      size: 13,
+      className: "text-muted"
+    }), task.due ? /*#__PURE__*/React.createElement(DueChip, {
+      iso: task.due,
+      verbose: true
+    }) : /*#__PURE__*/React.createElement("span", {
+      className: "text-muted"
+    }, "No date"))
+  })), list && /*#__PURE__*/React.createElement(MetaRow, {
+    label: "List"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center gap-2 -mx-2 px-2 h-7 text-[13px]"
+  }, /*#__PURE__*/React.createElement(ListIcon, {
+    size: 12,
+    className: "text-muted"
+  }), list.name)))))));
+};
+
+/* ════════════════════════════════════════════════════════════════════════════
+   PAGES
+   ════════════════════════════════════════════════════════════════════════════ */
+
+const SimpleTaskRow = ({
+  task,
+  showList = true
+}) => {
+  const ws = useWorkspaceStore();
+  const selectTask = useUIStore(s => s.selectTask);
+  const list = ws.findList(task.listId)?.list;
+  return /*#__PURE__*/React.createElement("div", {
+    onClick: () => selectTask(task.id),
+    className: "group flex items-center gap-3 py-2.5 px-3 -mx-3 rounded-md cursor-pointer hover-bg-hover transition-colors"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center gap-1 shrink-0"
+  }, /*#__PURE__*/React.createElement(StatusIcon, {
+    statusId: task.status
+  }), /*#__PURE__*/React.createElement(PriorityIcon, {
+    priorityId: task.priority
+  })), showList && list && /*#__PURE__*/React.createElement("span", {
+    className: "text-[11.5px] flex items-center gap-1.5 px-1.5 h-5 rounded shrink-0",
+    style: {
+      background: 'var(--bg-muted)',
+      color: 'var(--fg-muted)'
+    }
+  }, /*#__PURE__*/React.createElement(ListIcon, {
+    size: 10
+  }), " ", list.name), /*#__PURE__*/React.createElement("span", {
+    className: "text-[13.5px] flex-1 min-w-0 truncate",
+    style: {
+      color: task.status === 'done' ? 'var(--fg-muted)' : 'var(--fg)'
+    }
+  }, task.title), /*#__PURE__*/React.createElement("span", {
+    className: "shrink-0"
+  }, /*#__PURE__*/React.createElement(DueChip, {
+    iso: task.due,
+    verbose: true
+  })), /*#__PURE__*/React.createElement(Avatar, {
+    user: ws.members.find(m => m.id === task.assigneeId)
+  }));
+};
+
+/* ────── Pages ────── */
+
+const AssignedCommentsPage = () => {
+  const tasks = useTaskStore(s => s.getMyMentions());
+  const ws = useWorkspaceStore();
+  const selectTask = useUIStore(s => s.selectTask);
+  const threads = useMemo(() => tasks.flatMap(t => (t.comments || []).filter(c => (c.mentions || []).includes('u6')).map(c => ({
+    task: t,
+    comment: c
+  }))).sort((a, b) => b.comment.ts.localeCompare(a.comment.ts)), [tasks]);
+  return /*#__PURE__*/React.createElement(PageContainer, null, /*#__PURE__*/React.createElement(PageHeader, {
+    title: "Assigned comments",
+    count: threads.length
+  }), threads.length === 0 ? /*#__PURE__*/React.createElement(EmptyState, {
+    icon: AtSign,
+    title: "No mentions yet",
+    description: "When teammates @mention you, threads land here."
+  }) : /*#__PURE__*/React.createElement("div", {
+    className: "flex flex-col gap-1"
+  }, threads.map(({
+    task,
+    comment
+  }) => {
+    const author = ws.members.find(m => m.id === comment.userId);
+    return /*#__PURE__*/React.createElement("div", {
+      key: comment.id,
+      onClick: () => selectTask(task.id),
+      className: "flex gap-3 px-3 py-3 -mx-3 rounded-md cursor-pointer hover-bg-hover transition-colors"
+    }, /*#__PURE__*/React.createElement(Avatar, {
+      user: author,
+      size: "md"
+    }), /*#__PURE__*/React.createElement("div", {
+      className: "flex-1 min-w-0"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "flex items-baseline gap-2 mb-1"
+    }, /*#__PURE__*/React.createElement("span", {
+      className: "text-[13px] font-medium"
+    }, author?.name), /*#__PURE__*/React.createElement("span", {
+      className: "text-[11.5px] text-subtle"
+    }, new Date(comment.ts).toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric'
+    })), /*#__PURE__*/React.createElement("span", {
+      className: "text-subtle"
+    }, "\xB7"), /*#__PURE__*/React.createElement("span", {
+      className: "text-[12px] text-muted truncate"
+    }, "on \"", task.title, "\"")), /*#__PURE__*/React.createElement("p", {
+      className: "text-[13.5px] leading-relaxed"
+    }, comment.body)));
+  })));
+};
+const TrashPage = () => {
+  const ws = useWorkspaceStore();
+  const trash = ws.trash;
+  /* Sort newest first */
+  const sorted = [...trash].sort((a, b) => b.deletedAt.localeCompare(a.deletedAt));
+  const formatDeleted = iso => {
+    const d = new Date(iso);
+    const now = new Date();
+    const diffH = (now - d) / 3600000;
+    if (diffH < 1) return 'just now';
+    if (diffH < 24) return `${Math.floor(diffH)}h ago`;
+    const diffD = Math.floor(diffH / 24);
+    if (diffD < 7) return `${diffD}d ago`;
+    return d.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric'
+    });
+  };
+  return /*#__PURE__*/React.createElement(PageContainer, {
+    maxWidth: 920
+  }, /*#__PURE__*/React.createElement(PageHeader, {
+    title: "Trash",
+    count: trash.length,
+    actions: trash.length > 0 ? /*#__PURE__*/React.createElement("button", {
+      onClick: () => {
+        if (window.confirm(`Permanently delete all ${trash.length} items in trash? This cannot be undone.`)) {
+          ws.emptyTrash();
+        }
+      },
+      className: "flex items-center gap-1.5 h-7 px-2.5 rounded-md text-[12px] font-medium transition-colors",
+      style: {
+        color: 'var(--priority-urgent)',
+        border: '1px solid var(--border)'
+      }
+    }, /*#__PURE__*/React.createElement(Trash2, {
+      size: 12
+    }), " Empty trash") : null
+  }), sorted.length === 0 ? /*#__PURE__*/React.createElement(EmptyState, {
+    icon: Trash2,
+    title: "Trash is empty",
+    description: "Deleted spaces, folders, lists and personal lists will appear here. Items can be restored or permanently removed."
+  }) : /*#__PURE__*/React.createElement("div", {
+    className: "flex flex-col"
+  }, sorted.map(entry => {
+    const item = entry.item;
+    const isSpace = entry.kind === 'space';
+    const isPersonalList = entry.kind === 'personalList';
+    const itemType = isSpace ? 'Space' : isPersonalList ? 'Personal list' : item.type === 'folder' ? 'Folder' : item.type === 'sprint' ? 'Sprint folder' : 'List';
+    const Icon = isSpace ? null : isPersonalList || item.type === 'list' ? ListIcon : item.type === 'sprint' ? Zap : Folder;
+    return /*#__PURE__*/React.createElement("div", {
+      key: entry.deletedAt,
+      className: "group flex items-center gap-3 py-2.5 px-3 -mx-3 rounded-md hover-bg-hover transition-colors"
+    }, isSpace ? /*#__PURE__*/React.createElement("span", {
+      className: "w-5 h-5 rounded flex items-center justify-center text-[11px] font-semibold shrink-0",
+      style: {
+        background: `${item.color}26`,
+        color: item.color
+      }
+    }, item.name[0]) : /*#__PURE__*/React.createElement(Icon, {
+      size: 14,
+      className: "shrink-0",
+      style: {
+        color: 'var(--fg-muted)'
+      }
+    }), /*#__PURE__*/React.createElement("div", {
+      className: "flex-1 min-w-0"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "text-[13.5px] truncate",
+      style: {
+        color: 'var(--fg)'
+      }
+    }, item.name), /*#__PURE__*/React.createElement("div", {
+      className: "text-[11.5px] mt-0.5",
+      style: {
+        color: 'var(--fg-subtle)'
+      }
+    }, itemType, " \xB7 deleted ", formatDeleted(entry.deletedAt))), /*#__PURE__*/React.createElement("button", {
+      onClick: () => ws.restoreFromTrash(entry.deletedAt),
+      className: "opacity-0 group-hover:opacity-100 transition-opacity h-7 px-2.5 rounded-md text-[12px] font-medium border",
+      style: {
+        borderColor: 'var(--border)',
+        color: 'var(--fg)'
+      }
+    }, "Restore"), /*#__PURE__*/React.createElement("button", {
+      onClick: () => {
+        if (window.confirm(`Permanently delete "${item.name}"? This cannot be undone.`)) {
+          ws.removeFromTrash(entry.deletedAt);
+        }
+      },
+      className: "opacity-0 group-hover:opacity-100 transition-opacity h-7 w-7 rounded-md flex items-center justify-center transition-colors",
+      style: {
+        color: 'var(--priority-urgent)'
+      },
+      title: "Delete forever"
+    }, /*#__PURE__*/React.createElement(Trash2, {
+      size: 13
+    })));
+  })));
+};
+const AssignedToMePage = () => {
+  const tasks = useTaskStore(s => s.getMyTasks().filter(t => t.status !== 'done'));
+  return /*#__PURE__*/React.createElement(PageContainer, {
+    maxWidth: 1080
+  }, /*#__PURE__*/React.createElement(PageHeader, {
+    title: "Assigned to me",
+    count: tasks.length
+  }), tasks.length === 0 ? /*#__PURE__*/React.createElement(EmptyState, {
+    icon: CheckCircle2,
+    title: "Nothing assigned",
+    description: "Inbox zero. Enjoy it."
+  }) : /*#__PURE__*/React.createElement("div", {
+    className: "flex flex-col"
+  }, tasks.map(t => /*#__PURE__*/React.createElement(SimpleTaskRow, {
+    key: t.id,
+    task: t
+  }))));
+};
+const TodayOverduePage = () => {
+  const tasks = useTaskStore(s => s.getMyTodayOverdue());
+  const overdue = tasks.filter(t => {
+    const f = formatDue(t.due);
+    return f?.tone === 'overdue';
+  });
+  const due = tasks.filter(t => {
+    const f = formatDue(t.due);
+    return f?.tone === 'warn';
+  });
+  return /*#__PURE__*/React.createElement(PageContainer, {
+    maxWidth: 1080
+  }, /*#__PURE__*/React.createElement(PageHeader, {
+    title: "Today & overdue",
+    count: tasks.length
+  }), tasks.length === 0 ? /*#__PURE__*/React.createElement(EmptyState, {
+    icon: Calendar,
+    title: "All caught up",
+    description: "Nothing due today. Take a breath."
+  }) : /*#__PURE__*/React.createElement(React.Fragment, null, overdue.length > 0 && /*#__PURE__*/React.createElement("section", {
+    className: "mb-10"
+  }, /*#__PURE__*/React.createElement("h3", {
+    className: "text-[13px] font-semibold mb-3 pb-2 border-b border-app"
+  }, "Overdue"), overdue.map(t => /*#__PURE__*/React.createElement(SimpleTaskRow, {
+    key: t.id,
+    task: t
+  }))), due.length > 0 && /*#__PURE__*/React.createElement("section", null, /*#__PURE__*/React.createElement("h3", {
+    className: "text-[13px] font-semibold mb-3 pb-2 border-b border-app"
+  }, "Today"), due.map(t => /*#__PURE__*/React.createElement(SimpleTaskRow, {
+    key: t.id,
+    task: t
+  })))));
+};
+const ListPage = ({
+  listId
+}) => {
+  const ws = useWorkspaceStore();
+  const tasks = useTaskStore(s => s.getTasksByListId(listId));
+  const addTask = useTaskStore(s => s.addTask);
+  const selectTask = useUIStore(s => s.selectTask);
+  const found = ws.findList(listId);
+  const [view, setView] = useState('list');
+  if (!found) {
+    return /*#__PURE__*/React.createElement(PageContainer, null, /*#__PURE__*/React.createElement(EmptyState, {
+      icon: AlertCircle,
+      title: "List not found",
+      description: "It may have been deleted."
+    }));
+  }
+  const {
+    list,
+    isPersonal,
+    spaceId
+  } = found;
+  const space = ws.spaces.find(s => s.id === spaceId);
+  const done = tasks.filter(t => t.status === 'done').length;
+  const progress = tasks.length > 0 ? done / tasks.length * 100 : 0;
+  const handleAddTask = () => {
+    const id = addTask(listId, {});
+    selectTask(id);
+  };
+  return /*#__PURE__*/React.createElement("div", {
+    className: "flex flex-col flex-1 min-h-0",
+    style: {
+      background: 'var(--bg-elevated)'
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "border-b flex items-center gap-3 px-6 shrink-0",
+    style: {
+      borderColor: 'var(--border)',
+      height: 52
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "w-2 h-2 rounded-sm shrink-0",
+    style: {
+      background: space?.color || 'var(--fg-subtle)'
+    }
+  }), /*#__PURE__*/React.createElement("h1", {
+    className: "text-[15px] font-semibold leading-none truncate",
+    style: {
+      color: 'var(--fg)'
+    }
+  }, list.name), /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center gap-2 text-[12px] shrink-0",
+    style: {
+      color: 'var(--fg-subtle)'
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "mono tabular-nums"
+  }, tasks.length), tasks.length > 0 && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("span", null, "\xB7"), /*#__PURE__*/React.createElement("span", {
+    className: "flex items-center gap-1.5"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "block h-[3px] w-16 rounded-full overflow-hidden",
+    style: {
+      background: 'var(--bg-muted)'
+    }
+  }, /*#__PURE__*/React.createElement(motion.span, {
+    className: "block h-full rounded-full",
+    initial: {
+      width: 0
+    },
+    animate: {
+      width: `${progress}%`
+    },
+    transition: {
+      duration: 0.6,
+      ease: 'easeOut'
+    },
+    style: {
+      background: 'var(--status-done)'
+    }
+  })), /*#__PURE__*/React.createElement("span", {
+    className: "mono tabular-nums"
+  }, Math.round(progress), "%")))), /*#__PURE__*/React.createElement("div", {
+    className: "flex-1"
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center rounded-md p-0.5 gap-0.5 shrink-0",
+    style: {
+      background: 'var(--bg-muted)'
+    }
+  }, [{
+    id: 'list',
+    label: 'List',
+    icon: LayoutList
+  }, {
+    id: 'board',
+    label: 'Board',
+    icon: KanbanSquare
+  }].map(v => /*#__PURE__*/React.createElement("button", {
+    key: v.id,
+    onClick: () => setView(v.id),
+    className: "flex items-center gap-1.5 h-6 px-2 rounded text-[12px] font-medium transition-all",
+    style: {
+      background: view === v.id ? 'var(--bg-elevated)' : 'transparent',
+      color: view === v.id ? 'var(--fg)' : 'var(--fg-muted)',
+      boxShadow: view === v.id ? 'var(--shadow-sm)' : 'none'
+    }
+  }, /*#__PURE__*/React.createElement(v.icon, {
+    size: 12,
+    strokeWidth: 1.8
+  }), v.label))), /*#__PURE__*/React.createElement("button", {
+    onClick: handleAddTask,
+    className: "flex items-center gap-1.5 h-7 px-2.5 rounded-md text-[12.5px] font-medium transition-all shrink-0",
+    style: {
+      background: 'var(--fg)',
+      color: 'var(--bg)'
+    }
+  }, /*#__PURE__*/React.createElement(Plus, {
+    size: 12
+  }), " New task")), tasks.length === 0 ? /*#__PURE__*/React.createElement(EmptyState, {
+    icon: ListIcon,
+    title: "No tasks yet",
+    description: "Add your first task to get started.",
+    action: /*#__PURE__*/React.createElement("button", {
+      onClick: handleAddTask,
+      className: "flex items-center gap-1.5 h-8 px-3 rounded-md text-[13px] font-medium",
+      style: {
+        background: 'var(--fg)',
+        color: 'var(--bg)'
+      }
+    }, /*#__PURE__*/React.createElement(Plus, {
+      size: 13
+    }), " New task")
+  }) : /*#__PURE__*/React.createElement(motion.div, {
+    key: view,
+    initial: {
+      opacity: 0,
+      y: 4
+    },
+    animate: {
+      opacity: 1,
+      y: 0
+    },
+    transition: {
+      duration: 0.18
+    },
+    className: "flex-1 min-h-0"
+  }, view === 'list' ? /*#__PURE__*/React.createElement(ListView, {
+    listId: listId,
+    onOpenTask: selectTask
+  }) : /*#__PURE__*/React.createElement(BoardView, {
+    listId: listId,
+    onOpenTask: selectTask
+  })));
+};
+
+/* ════════════════════════════════════════════════════════════════════════════
+   COMMAND PALETTE
+   ════════════════════════════════════════════════════════════════════════════ */
+
+const flattenLists = spaces => {
+  const out = [];
+  const walk = (nodes, path) => {
+    nodes.forEach(n => {
+      if (n.type === 'list') out.push({
+        list: n,
+        path: [...path, n.name].join(' / ')
+      });else if (n.children) walk(n.children, [...path, n.name]);
+    });
+  };
+  spaces.forEach(sp => walk(sp.nodes, [sp.name]));
+  return out;
+};
+const CommandPalette = () => {
+  const {
+    commandOpen,
+    setCommandOpen
+  } = useUIStore();
+  const {
+    navigate
+  } = useRoute();
+  const ws = useWorkspaceStore();
+  const tasks = useTaskStore(s => s.tasks);
+  const selectTask = useUIStore(s => s.selectTask);
+  const [query, setQuery] = useState('');
+  const [active, setActive] = useState(0);
+  const inputRef = useRef(null);
+  useEffect(() => {
+    if (commandOpen) {
+      setQuery('');
+      setActive(0);
+      setTimeout(() => inputRef.current?.focus(), 50);
+    }
+  }, [commandOpen]);
+  const allLists = useMemo(() => flattenLists(ws.spaces), [ws.spaces]);
+  const items = useMemo(() => {
+    const q = query.toLowerCase().trim();
+    const navItems = [{
+      id: 'nav-comments',
+      section: 'Navigate',
+      label: 'Assigned comments',
+      icon: MessageSquare,
+      do: () => navigate('/comments')
+    }, {
+      id: 'nav-mine',
+      section: 'Navigate',
+      label: 'Assigned to me',
+      icon: CheckCircle2,
+      do: () => navigate('/me/assigned')
+    }, {
+      id: 'nav-today',
+      section: 'Navigate',
+      label: 'Today & overdue',
+      icon: Calendar,
+      do: () => navigate('/me/today')
+    }];
+    const listItems = allLists.map(({
+      list,
+      path
+    }) => ({
+      id: `list-${list.id}`,
+      section: 'Lists',
+      label: path,
+      icon: ListIcon,
+      do: () => navigate(`/list/${list.id}`)
+    }));
+    const personalItems = ws.personalLists.map(l => ({
+      id: `pl-${l.id}`,
+      section: 'Personal',
+      label: l.name,
+      icon: ListIcon,
+      do: () => navigate(`/list/${l.id}`)
+    }));
+    const taskItems = tasks.slice(0, 30).map(t => ({
+      id: `task-${t.id}`,
+      section: 'Tasks',
+      label: t.title,
+      statusId: t.status,
+      do: () => selectTask(t.id)
+    }));
+    let all = [...navItems, ...personalItems, ...listItems, ...taskItems];
+    if (q) all = all.filter(i => i.label.toLowerCase().includes(q));
+    return all;
+  }, [query, ws.spaces, ws.personalLists, tasks, navigate, selectTask, allLists]);
+  const grouped = useMemo(() => {
+    const groups = {};
+    items.forEach((it, i) => {
+      (groups[it.section] ||= []).push({
+        ...it,
+        _idx: i
+      });
+    });
+    return groups;
+  }, [items]);
+  useEffect(() => {
+    if (!commandOpen) return;
+    const onKey = e => {
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        setActive(a => Math.min(items.length - 1, a + 1));
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        setActive(a => Math.max(0, a - 1));
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        items[active]?.do();
+        setCommandOpen(false);
+      } else if (e.key === 'Escape') {
+        e.preventDefault();
+        setCommandOpen(false);
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [commandOpen, items, active, setCommandOpen]);
+  useEffect(() => {
+    setActive(0);
+  }, [query]);
+  return /*#__PURE__*/React.createElement(AnimatePresence, null, commandOpen && /*#__PURE__*/React.createElement(motion.div, {
+    initial: {
+      opacity: 0
+    },
+    animate: {
+      opacity: 1
+    },
+    exit: {
+      opacity: 0
+    },
+    transition: {
+      duration: 0.12
+    },
+    className: "fixed inset-0 z-[100] flex items-start justify-center pt-[18vh]",
+    style: {
+      background: 'rgba(20,18,14,0.40)',
+      backdropFilter: 'blur(4px)'
+    },
+    onClick: () => setCommandOpen(false)
+  }, /*#__PURE__*/React.createElement(motion.div, {
+    initial: {
+      opacity: 0,
+      y: -8,
+      scale: 0.97
+    },
+    animate: {
+      opacity: 1,
+      y: 0,
+      scale: 1
+    },
+    exit: {
+      opacity: 0,
+      y: -8,
+      scale: 0.97
+    },
+    transition: {
+      duration: 0.18
+    },
+    onClick: e => e.stopPropagation(),
+    className: "bg-elevated rounded-xl shadow-modal border border-app w-full max-w-[600px] overflow-hidden"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center gap-2 px-4 h-12 border-b border-app"
+  }, /*#__PURE__*/React.createElement(Search, {
+    size: 16,
+    className: "text-subtle"
+  }), /*#__PURE__*/React.createElement("input", {
+    ref: inputRef,
+    value: query,
+    onChange: e => setQuery(e.target.value),
+    placeholder: "Search or jump to\u2026",
+    className: "flex-1 bg-transparent outline-none text-[14px] placeholder:text-subtle"
+  }), /*#__PURE__*/React.createElement(Kbd, null, "esc")), /*#__PURE__*/React.createElement("div", {
+    className: "max-h-[400px] overflow-y-auto py-1.5"
+  }, Object.keys(grouped).length === 0 && /*#__PURE__*/React.createElement("div", {
+    className: "px-4 py-10 text-center text-subtle text-[13px]"
+  }, "No results for \"", query, "\""), Object.entries(grouped).map(([section, list]) => /*#__PURE__*/React.createElement("div", {
+    key: section
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "px-3 pt-2 pb-1 text-[10.5px] font-semibold uppercase tracking-wider text-subtle"
+  }, section), list.map(it => /*#__PURE__*/React.createElement("div", {
+    key: it.id,
+    onMouseEnter: () => setActive(it._idx),
+    onClick: () => {
+      it.do();
+      setCommandOpen(false);
+    },
+    className: "cmd-row flex items-center gap-2.5 mx-1.5 px-2.5 h-9 rounded-md cursor-pointer text-[13.5px]",
+    "data-active": active === it._idx
+  }, it.icon && /*#__PURE__*/React.createElement(it.icon, {
+    size: 14,
+    className: "text-muted",
+    strokeWidth: 1.8
+  }), it.statusId && /*#__PURE__*/React.createElement(StatusIcon, {
+    statusId: it.statusId
+  }), /*#__PURE__*/React.createElement("span", {
+    className: "flex-1 truncate"
+  }, it.label)))))))));
+};
+
+/* ════════════════════════════════════════════════════════════════════════════
+   GLOBAL HOTKEYS
+   ════════════════════════════════════════════════════════════════════════════ */
+
+const useGlobalHotkeys = () => {
+  const setCommandOpen = useUIStore(s => s.setCommandOpen);
+  const toggleSidebar = useUIStore(s => s.toggleSidebar);
+  useEffect(() => {
+    const onKey = e => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        setCommandOpen(true);
+        return;
+      }
+      if ((e.metaKey || e.ctrlKey) && e.key === '\\') {
+        e.preventDefault();
+        toggleSidebar();
+        return;
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [setCommandOpen, toggleSidebar]);
+};
+
+/* ════════════════════════════════════════════════════════════════════════════
+   APP
+   ════════════════════════════════════════════════════════════════════════════ */
+
+const App = () => {
+  const themeId = useUIStore(s => s.themeId);
+  const {
+    route
+  } = useRoute();
+  useEffect(() => {
+    const t = THEMES.find(x => x.id === themeId) || THEMES[0];
+    document.documentElement.dataset.theme = t.id;
+    document.documentElement.classList.toggle('dark', t.mode === 'dark');
+  }, [themeId]);
+  useGlobalHotkeys();
+
+  /* Subscribe to ws state so breadcrumbs update when names change */
+  const spaces = useWorkspaceStore(s => s.spaces);
+  const personalLists = useWorkspaceStore(s => s.personalLists);
+  let page;
+  let breadcrumbs = [];
+  if (route === '/comments') {
+    page = /*#__PURE__*/React.createElement(AssignedCommentsPage, null);
+    breadcrumbs = ['Assigned comments'];
+  } else if (route === '/trash') {
+    page = /*#__PURE__*/React.createElement(TrashPage, null);
+    breadcrumbs = ['Trash'];
+  } else if (route === '/me/assigned') {
+    page = /*#__PURE__*/React.createElement(AssignedToMePage, null);
+    breadcrumbs = ['My tasks', 'Assigned to me'];
+  } else if (route === '/me/today') {
+    page = /*#__PURE__*/React.createElement(TodayOverduePage, null);
+    breadcrumbs = ['My tasks', 'Today & overdue'];
+  } else if (route.startsWith('/list/')) {
+    const id = route.split('/')[2];
+    /* find in spaces tree or personal lists */
+    let found = null;
+    for (const sp of spaces) {
+      const r = findNodeAndParent(sp.nodes, id);
+      if (r && r.node.type === 'list') {
+        found = {
+          list: r.node,
+          spaceId: sp.id,
+          isPersonal: false
+        };
+        break;
+      }
+    }
+    if (!found) {
+      const pl = personalLists.find(l => l.id === id);
+      if (pl) found = {
+        list: pl,
+        spaceId: null,
+        isPersonal: true
+      };
+    }
+    page = /*#__PURE__*/React.createElement(ListPage, {
+      listId: id,
+      key: id
+    });
+    if (found) {
+      if (found.isPersonal) breadcrumbs = ['Personal', found.list.name];else {
+        const sp = spaces.find(s => s.id === found.spaceId);
+        breadcrumbs = [sp?.name || 'Space', found.list.name];
+      }
+    } else {
+      breadcrumbs = ['List'];
+    }
+  } else {
+    page = /*#__PURE__*/React.createElement(AssignedToMePage, null);
+    breadcrumbs = ['My tasks', 'Assigned to me'];
+  }
+  return /*#__PURE__*/React.createElement("div", {
+    className: "flex h-full bg-app text-fg"
+  }, /*#__PURE__*/React.createElement(Sidebar, null), /*#__PURE__*/React.createElement("main", {
+    className: "flex-1 flex flex-col min-w-0",
+    style: {
+      background: 'var(--bg-elevated)',
+      position: 'relative',
+      zIndex: 1
+    }
+  }, /*#__PURE__*/React.createElement(TopBar, {
+    breadcrumbs: breadcrumbs
+  }), page), /*#__PURE__*/React.createElement(CommandPalette, null), /*#__PURE__*/React.createElement(TaskModal, null));
+};
+const root = createRoot(document.getElementById('root'));
+root.render(/*#__PURE__*/React.createElement(App, null));
+</script>
+</body>
+</html>
